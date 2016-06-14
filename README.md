@@ -3,6 +3,42 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 
 Version: 1.0.0.0
 
+ScanGUI Auto-Change Data:
+	L-<Location>
+	I-<Item>-<Model>
+	IL-<Location Type>-<Name/Label>
+
+
+Archived Filename Explanation:
+	Archived filenames look like this:
+	Inventory.20160603.234505.Startup.csv
+	Inventory.20160603.234506.Changed.csv
+	
+	Heres what it means:
+	The numbers are a time stamp that is exactly when backup was made, it breaks down as below
+	
+	Inventory.	2016	06	03.	23	45	05	
+	Inventory.	2016	06	03.	23	45	06	
+			Year	Month	Day	Hour	Minute	Second
+	
+	After that is Why it was automatically backed up:
+	.Startup.csv
+	.Changed.csv
+	
+	If this archive folder ever contains more than 100 backups, the oldest files will automatically be purged to keep the total file count at 100.
+	
+	If you want to change that value (keep more or less):
+	 - Open the info.ini in the folder above (\G6 Mission Inventory\AppData\info.ini)
+	 - Change the number value under [Archived Records to Keep]
+	
+	One small note on changing the value: the Inventory.csv used for demonstration had 840 Lines and was 51KB, when the folder had 100 of them, the folder's size was 5.08 MB. 
+	Use that information as you will.
+
+
+
+
+To Do:
+
  - To do
  / Started
  x Done
@@ -10,7 +46,6 @@ Version: 1.0.0.0
  * Not Going to do, see [Note] at end
  > in progress
 
-To Do:
 
 BugFixes: (Something acts like it isn't supposed to)
  - Bug: ComboBoxes broken completely
@@ -29,6 +64,8 @@ Feature Fix: (Something works but it's kluge-y, I can implement better, or is mi
  ? Location/Model on scangui not updating [Seems to be working fine now]
  - Make Undo and Clear boxes refresh the SSList
  - Make sure Menu hides if not on Tab 1 and shows if on Tab 1
+ / Make anything that triggers Filtration run FReset First, then [Guicontrol, text] the appropriate filter with the appropriate value then gosub, Filtration
+ - Figure out how to auto-size filter DDL's to fit contents
 
 Feature-Add:
  - Make Changes popup if other tab selected
@@ -36,11 +73,13 @@ Feature-Add:
  - Figure way to edit multiple lines at once in "Make Changes"
  - Make Undo Hotkey ^z, make return if tab <> 1 (See if it can be useful on other tabs)
  - Figure out better colored buttons
-   - Check other gui styles, see if button color change possible
-     - See if WinX style gui available
+     - Check other gui styles, see if button color change possible
+         - See if WinX style gui available
  - Look into ifexist C:\Program Files\Microsoft Office 15\root\office15\excel.exe (or detect version and if >2010), don't delete Sheets 2 & 3
  - When issuing, If user checks IL, check all items in location	[If too complicated, been directed to veto]
     - RowNumber := 0, RowNumber := Search(RowNumber...) Search for location and check
+ - When scanning in Add to Inventory ScanGUI (and possibly Turn-In) make Splashtext with autochange (item labels [i-<>-<>]) and small tips and tricks (ex. type "undo" to undo and "clear" to clear
+     - make typing "Undo" and "Clear" execute those functions
 
 Still To Do:
  / Test all controls make sure everything is Nominal [ScanGUI seems to be fine after private testing, real testing commences tomorrow]
@@ -55,6 +94,19 @@ Still To Do:
 ----------------------------------------------------------
 
 Done:
+ x Edit BuildInventory:
+   x get rid of anything that messes w/ filters
+   x gosub, FReset    [BuildInventory still has to build other LV's and dropdowns(/combo boxes)]
+   
+ x give option for Full2062 to have multiple customers
+ x add button to gui for multiple customers then gosub to BuildInventory then gosub to gui for multiple customers and carry on from there.
+   x if customer list has more than one, InputBox and ask "Who is this being issued to?" for the 2062.
+
+ x Add line above filters.
+ x Add text (ex: Location, Label Set, Item, Model...)
+ x Make filters have alphabetical, unique list of contents of Category
+ x Make Label Names [–] then number (if that doesn't work find some other ASCII character that doesn't return as a hyphen)
+
  * add Change sounds to  Edit Menu, for tabs 1 and 4 [Vetoed by Saint Martin]
  * Item (STOCK NUMBER) [Veto...too vague]
  * Make Label Correspond to Item NOT location(?)	[veto, too complicated]
