@@ -20,9 +20,9 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	Heres what it means:    
 	The numbers are a time stamp that is exactly when backup was made, it breaks down as below    
 	  
-	Inventory.	2016	06		03.	23	45	05	  
-	Inventory.	2016	06		03.	23	45	06	  
-				Year	Month	Day	Hour	Minute	Second  
+	Inventory.	2016	06		03.		23		45		05	  
+	Inventory.	2016	06		03.		23		45		06	  
+				Year	Month	Day		Hour	Minute	Second  
 	  
 	After that is Why it was automatically backed up:  
 	.Startup.csv  
