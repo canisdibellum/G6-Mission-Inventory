@@ -4,7 +4,7 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 Version: 1.0.1.0  
     
 Version Breakdown:  
-    [Major UI or functionality change] . [Feature-Add] . [Feature-Fix/Bug-Fix] . [Code Cleanup] 
+    Major UI or functionality change . Feature-Add . Feature-Fix/Bug-Fix . Code Cleanup  
 
 ScanGUI Auto-Change Data:    
 	L-[Location]    
@@ -31,8 +31,8 @@ Archived Filename Explanation:
 	If this archive folder ever contains more than 100 backups, the oldest files will automatically be purged to keep the total file count at 100.  
 	  
 	If you want to change that value (keep more or less):  
-	 - Open the info.ini in the folder above (\G6 Mission Inventory\AppData\info.ini)  
-	 - Change the number value under [Archived Records to Keep]  
+	 □ Open the info.ini in the folder above (\G6 Mission Inventory\AppData\info.ini)  
+	 □ Change the number value under [Archived Records to Keep]  
 	  
 	One small note on changing the value: the Inventory.csv used for demonstration had 840 Lines and was 51KB, when the folder had 100 of them, the folder's size was 5.08 MB.   
 	Use that information as you will.  
@@ -52,48 +52,48 @@ To Do:
     
 BugFixes: (Something acts like it isn't supposed to)  
 	 □ Bug: Scanning Registered Item number attempts to add Serial
-		 - Make sure scanned data is analyzed in correct order
+		 □ Make sure scanned data is analyzed in correct order
 	 □ Bug: Choose Customer DDL for Turn-In Broken
-	 - Bug: ComboBoxes broken completely    
-	 - bug: not clearing scanned serials from turn-in    
+	 □ Bug: ComboBoxes broken completely    
+	 □ bug: not clearing scanned serials from turn-in    
 	 ? bug: not storing StoredSerials [I think I fixed it]    
 	 ? Bug: When you scan registered Number, it keeps the value onto the next scan [Can't Reproduce at home....attempt with scanner]  
-	 - bug: not looking at ScanGUI for most recent Label number  
-	 - bug: During Verify Issue, when remove 1st Serial, it leaves white space at top  
+	 □ bug: not looking at ScanGUI for most recent Label number  
+	 □ bug: During Verify Issue, when remove 1st Serial, it leaves white space at top  
     
 Feature Fix: (Something works but it's kluge-y, I can implement better, or is missing certain functionality [ex. doesn't handle Zero or Negative Input])  
-	 - Re-Do Build Inventory, use StringSplit.....make sure Quantified Items (if Serial is blank), don't get added to CBIList  
-	 - Don't add Quantified Items to Item ComboBox!  
-	 - Clarify Error Message Buttons on ScanGui Serial Error  
-	 - Handle scanning "IL-" codes in Verify Issue  
+	 □ Re-Do Build Inventory, use StringSplit.....make sure Quantified Items (if Serial is blank), don't get added to CBIList  
+	 □ Don't add Quantified Items to Item ComboBox!  
+	 □ Clarify Error Message Buttons on ScanGui Serial Error  
+	 □ Handle scanning "IL-" codes in Verify Issue  
 	 ? Location/Model on scangui not updating [Seems to be working fine now]  
-	 - Make Undo and Clear boxes refresh the SSList  
-	 - Make sure Menu hides if not on Tab 1 and shows if on Tab 1  
+	 □ Make Undo and Clear boxes refresh the SSList  
+	 □ Make sure Menu hides if not on Tab 1 and shows if on Tab 1  
 	 / Make anything that triggers Filtration run FReset First, then [Guicontrol, text] the appropriate filter with the appropriate value then gosub, Filtration  
-	 - Figure out how to auto-size filter DDL's to fit contents  
+	 □ Figure out how to auto-size filter DDL's to fit contents  
     
 Feature-Add:  
-     - Make spacebar check multi-selection *****IMPORTANT******  
-	 - Make Changes popup if other tab selected  
-	 - make ComboBoxes instead be drop-downs with [Add...] option at bottom of list so they have to look through the list before typing something in.  
-	 - Figure way to edit multiple lines at once in "Make Changes"  
-	 - Make Undo Hotkey ^z, make return if tab <> 1 (See if it can be useful on other tabs)  
-	 - Figure out better colored buttons  
-	     - Check other gui styles, see if button color change possible  
-	         - See if WinX style gui available  
-	 - Look into ifexist C:\Program Files\Microsoft Office 15\root\office15\excel.exe (or detect version and if >2010), don't delete Sheets 2 & 3  
-	 - When issuing, If user checks IL, check all items in location	[If too complicated, been directed to veto]  
-	    - RowNumber := 0, RowNumber := Search(RowNumber...) Search for location and check  
-	 - When scanning in Add to Inventory ScanGUI (and possibly Turn-In) make Splashtext with autochange (item labels [i-<>-<>]) and small tips and tricks (ex. type "undo" to undo and "clear" to clear  
-	     - make typing "Undo" and "Clear" execute those functions  
+   □ Make spacebar check multi-selection *****IMPORTANT******  
+	 □ Make Changes popup if other tab selected  
+	 □ make ComboBoxes instead be drop-downs with [Add...] option at bottom of list so they have to look through the list before typing something in.  
+	 □ Figure way to edit multiple lines at once in "Make Changes"  
+	 □ Make Undo Hotkey ^z, make return if tab <> 1 (See if it can be useful on other tabs)  
+	 □ Figure out better colored buttons  
+	     □ Check other gui styles, see if button color change possible  
+	         □ See if WinX style gui available  
+	 □ Look into ifexist C:\Program Files\Microsoft Office 15\root\office15\excel.exe (or detect version and if >2010), don't delete Sheets 2 & 3  
+	 □ When issuing, If user checks IL, check all items in location	[If too complicated, been directed to veto]  
+	    □ RowNumber := 0, RowNumber := Search(RowNumber...) Search for location and check  
+	 □ When scanning in Add to Inventory ScanGUI (and possibly Turn-In) make Splashtext with autochange (item labels [i-<>-<>]) and small tips and tricks (ex. type "undo" to undo and "clear" to clear  
+	     □ make typing "Undo" and "Clear" execute those functions  
     
 Still To Do:  
 	 / Test all controls make sure everything is Nominal [ScanGUI seems to be fine after private testing, real testing commences tomorrow]  
-	 - Make sure all Inputs handle blank, 0, and Negative Entries  
-	 - Clear Out old crap and set HRNum to 0  
-	 - Write Up Documentation, to include commenting, especially Functions  
+	 □ Make sure all Inputs handle blank, 0, and Negative Entries  
+	 □ Clear Out old crap and set HRNum to 0  
+	 □ Write Up Documentation, to include commenting, especially Functions  
 	 / Disable controls that don't work [I THINK I got em all]  
-	 - Continue planning and then implement Menus  
+	 □ Continue planning and then implement Menus  
    
     
    
