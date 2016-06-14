@@ -1,21 +1,24 @@
 # G6-Mission-Inventory
 Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF Reader and Excel
+  
 
 Version: 1.0.0.0
+  
 
-ScanGUI Auto-Change Data:
-	L-<Location>
-	I-<Item>-<Model>
-	IL-<Location Type>-<Name/Label>
+ScanGUI Auto-Change Data:  
+	L-[Location]  
+	I-[Item]-[Model]  
+	IL-[Location Type]-[Name/Label]  
+  
+  
 
-
-Archived Filename Explanation:
-	Archived filenames look like this:
-	Inventory.20160603.234505.Startup.csv
-	Inventory.20160603.234506.Changed.csv
+Archived Filename Explanation:  
+	Archived filenames look like this:  
+	Inventory.20160603.234505.Startup.csv  
+	Inventory.20160603.234506.Changed.csv  
 	
-	Heres what it means:
-	The numbers are a time stamp that is exactly when backup was made, it breaks down as below
+	Heres what it means:  
+	The numbers are a time stamp that is exactly when backup was made, it breaks down as below  
 	
 	Inventory.	2016	06	03.	23	45	05	
 	Inventory.	2016	06	03.	23	45	06	
@@ -33,11 +36,13 @@ Archived Filename Explanation:
 	
 	One small note on changing the value: the Inventory.csv used for demonstration had 840 Lines and was 51KB, when the folder had 100 of them, the folder's size was 5.08 MB. 
 	Use that information as you will.
-
-
-
+  
+  
+  
+  
 
 To Do:
+  
 
  - To do
  / Started
@@ -45,16 +50,18 @@ To Do:
  ? Not Sure, test
  * Not Going to do, see [Note] at end
  > in progress
-
+  
+  
 
 BugFixes: (Something acts like it isn't supposed to)
- - Bug: ComboBoxes broken completely
- - Bug: Still Exports MAC Address if nothing issued
- - bug: not clearing scanned serials from turn-in
- ? bug: not storing StoredSerials [I think I fixed it]
+ - Bug: ComboBoxes broken completely  
+ - Bug: Still Exports MAC Address if nothing issued  
+ - bug: not clearing scanned serials from turn-in  
+ ? bug: not storing StoredSerials [I think I fixed it]  
  ? Bug: When you scan registered Number, it keeps the value onto the next scan [Can't Reproduce at home....attempt with scanner]
  - bug: not looking at ScanGUI for most recent Label number
  - bug: During Verify Issue, when remove 1st Serial, it leaves white space at top
+  
 
 Feature Fix: (Something works but it's kluge-y, I can implement better, or is missing certain functionality [ex. doesn't handle Zero or Negative Input])
  - Re-Do Build Inventory, use StringSplit.....make sure Quantified Items (if Serial is blank), don't get added to CBIList
@@ -66,6 +73,7 @@ Feature Fix: (Something works but it's kluge-y, I can implement better, or is mi
  - Make sure Menu hides if not on Tab 1 and shows if on Tab 1
  / Make anything that triggers Filtration run FReset First, then [Guicontrol, text] the appropriate filter with the appropriate value then gosub, Filtration
  - Figure out how to auto-size filter DDL's to fit contents
+  
 
 Feature-Add:
  - Make Changes popup if other tab selected
@@ -80,6 +88,7 @@ Feature-Add:
     - RowNumber := 0, RowNumber := Search(RowNumber...) Search for location and check
  - When scanning in Add to Inventory ScanGUI (and possibly Turn-In) make Splashtext with autochange (item labels [i-<>-<>]) and small tips and tricks (ex. type "undo" to undo and "clear" to clear
      - make typing "Undo" and "Clear" execute those functions
+  
 
 Still To Do:
  / Test all controls make sure everything is Nominal [ScanGUI seems to be fine after private testing, real testing commences tomorrow]
@@ -89,9 +98,11 @@ Still To Do:
  / Disable controls that don't work [I THINK I got em all]
  - Continue planning and then implement Menus
  
+  
 
  
 ----------------------------------------------------------
+  
 
 Done:
  x Edit BuildInventory:
@@ -101,11 +112,13 @@ Done:
  x give option for Full2062 to have multiple customers
  x add button to gui for multiple customers then gosub to BuildInventory then gosub to gui for multiple customers and carry on from there.
    x if customer list has more than one, InputBox and ask "Who is this being issued to?" for the 2062.
+  
 
  x Add line above filters.
  x Add text (ex: Location, Label Set, Item, Model...)
  x Make filters have alphabetical, unique list of contents of Category
  x Make Label Names [–] then number (if that doesn't work find some other ASCII character that doesn't return as a hyphen)
+  
 
  * add Change sounds to  Edit Menu, for tabs 1 and 4 [Vetoed by Saint Martin]
  * Item (STOCK NUMBER) [Veto...too vague]
