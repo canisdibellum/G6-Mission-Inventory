@@ -1,4 +1,4 @@
-Version := "1.0.0.0"
+Version := "1.0.1.0"
 Menu, tray, Icon , %A_ScriptDir%\Images\01.ico, 1, 1
 SetWorkingDir, %A_ScriptDir%
 #SingleInstance, Force
@@ -272,7 +272,7 @@ if qCount
   GuiControl, Choose,TabArea, 2
 else
   GuiControl, Choose,TabArea, 1
-  
+PostMessage, 0x014E, -1, 0,,ahk_id %hwndvar%
 SplashTextOff
 return
 
@@ -506,7 +506,7 @@ Loop, Parse, Inv, `n, `r
     %List% := ""
   }
 }
-StringTrimLeft, TINOSNList, TINOSNList, 2
+StringTrimLeft, TINOSNList, TINOSNList, 1
 StringReplace, TINOSNList, TINOSNList, `~, `,, All
 If(TINOSNList <> "")
   GuiControl, Enable, TINonSN
@@ -835,7 +835,6 @@ if (MA = "YES")
 
 
 
-MsgBox, %MasterIssueList%
 LV := "OHInventory"
 ;~ TtlC := 5
 ;~ SelCols := "1|4|3|7|8"
@@ -1502,8 +1501,8 @@ Gui, ListView, OHInventory
 LV_ModifyCol(3,"SortLogical")
 LV_ModifyCol(1,"SortLogical")
 ;~ StringReplace, IListC, IList, `,, ~, ALL
-StringReplace, IListC, IListC, |, `,, ALL
-IfNotInString, IListC, VoIP
+;~ StringReplace, IListC, IListC, |, `,, ALL
+IfNotInString, IList, VoIP
 {
   Gui, ListView, Inventory
   LV_ModifyCol(7,0)
@@ -2489,6 +2488,61 @@ Return
 ExpMAC:
 
 LookFor := CustGUI("Generating")
+if (LookFor = "" or LookFor = "-1")
+  Return
+Gui, 1: Default
+Gui, Listview, Inventory
+if (Customer = "MULTIPLE")
+  GuiControl, ChooseString, FIT, |Multiple...
+else
+  GuiControl, ChooseString, FIT, |%LookFor%
+Sleep, 250
+;~ SelCols := "2|4|6|7"
+CustGrid := GrabView(GVColsF,"Inventory","NO")
+;~ StringReplace, CustGrid, CustGrid, `,, |, All
+;~ StringReplace, CustGrid, CustGrid, ~,`,, All
+LV_Delete()
+Loop, Parse, CustGrid, `n, `r
+{
+  if (A_Index = 1 or A_Loopfield = "")
+    Continue
+  ;~ Field7 := ""
+  StringSplit, Field, A_Loopfield, `,
+  if (Field7 = "")
+    Continue
+  LV_Add("SortLogical", Field1, Field2, Field3, Field4, Field5, Field6, Field7, Field8, Field9)
+}
+StringReplace, MACsToExp, MACsToExp, `,, \, All
+Sort, MACsToExp, \
+StringReplace, MACsToExp, MACsToExp, \, `,, All
+
+
+
+
+
+LV := "Inventory"
+SelCols := "2|4|6|7"
+TtlC := 4
+Issue := "NO"
+
+GoSub, Export
+GoSub, BuildInventory
+SplashTextOff
+Return
+
+
+StringGetPos, Pos, CustGrid, `n
+pos += 2
+StringMid, CustGrid, CustGrid, %pos%
+
+IssuePDF(CustGrid, FromName, ToName)
+
+
+
+
+
+
+
 E := 8
 gosub, BuildInventory
 ;~ gosub, Filtration
