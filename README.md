@@ -87,7 +87,7 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	 - [ ] When scanning in Add to Inventory ScanGUI (and possibly Turn-In) make Splashtext with autochange (item labels [i-<>-<>]) and small tips and tricks (ex. type "undo" to undo and "clear" to clear  
 	     - [ ] make typing "Undo" and "Clear" execute those functions  
     
-## Still To Do:  
+## General To Do:  
 	 [/] Test all controls make sure everything is Nominal [ScanGUI seems to be fine after private testing, real testing commences tomorrow]  
 	 - [ ] Make sure all Inputs handle blank, 0, and Negative Entries  
 	 - [ ] Clear Out old crap and set HRNum to 0  
