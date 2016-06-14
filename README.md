@@ -51,9 +51,9 @@ To Do:
     
     
 BugFixes: (Something acts like it isn't supposed to)  
-	 □ Bug: Scanning Registered Item number attempts to add Serial
-		 □ Make sure scanned data is analyzed in correct order
-	 □ Bug: Choose Customer DDL for Turn-In Broken
+	 □ Bug: Scanning Registered Item number attempts to add Serial  
+		 □ Make sure scanned data is analyzed in correct order  
+	 □ Bug: Choose Customer DDL for Turn-In Broken  
 	 □ Bug: ComboBoxes broken completely    
 	 □ bug: not clearing scanned serials from turn-in    
 	 ? bug: not storing StoredSerials [I think I fixed it]    
