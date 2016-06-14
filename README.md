@@ -4,7 +4,7 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 Version: 1.0.1.0  
     
 Version Breakdown:  
-    Major UI or functionality change . Feature-Add . Feature-Fix/Bug-Fix . Code Cleanup  
+    [Major UI or functionality change] . [Feature-Add] . [Feature-Fix/Bug-Fix] . [Code Cleanup] 
 
 ScanGUI Auto-Change Data:    
 	L-[Location]    
@@ -42,7 +42,7 @@ Archived Filename Explanation:
     
 To Do:  
     
- - To do  
+ □ To do  
  / Started  
  x Done  
  ? Not Sure, test  
@@ -51,9 +51,9 @@ To Do:
     
     
 BugFixes: (Something acts like it isn't supposed to)  
-	 - Bug: Scanning Registered Item number attempts to add Serial
+	 □ Bug: Scanning Registered Item number attempts to add Serial
 		 - Make sure scanned data is analyzed in correct order
-	 - Bug: Choose Customer DDL for Turn-In Broken
+	 □ Bug: Choose Customer DDL for Turn-In Broken
 	 - Bug: ComboBoxes broken completely    
 	 - bug: not clearing scanned serials from turn-in    
 	 ? bug: not storing StoredSerials [I think I fixed it]    
