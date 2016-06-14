@@ -3,6 +3,9 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
     
 Version: 1.0.0.0  
     
+Version Breakdown:  
+    Major UI or functionality change . Feature-Add . Feature-Fix/Bug-Fix . Code Cleanup  
+
 ScanGUI Auto-Change Data:    
 	L-[Location]    
 	I-[Item]-[Model]    
