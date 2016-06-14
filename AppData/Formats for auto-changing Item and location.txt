@@ -1,0 +1,3 @@
+L-<Location>
+I-<Item>-<Model>
+IL-<Location Type>-<Name/Label>

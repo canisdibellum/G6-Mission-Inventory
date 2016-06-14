@@ -1,0 +1,23 @@
+Archived filenames look like this:
+Inventory.20160603.234505.Startup.csv
+Inventory.20160603.234506.Changed.csv
+
+Heres what it means:
+The numbers are a time stamp that is exactly when backup was made, it breaks down as below
+
+Inventory.	2016	06	03.	23	45	05	
+Inventory.	2016	06	03.	23	45	06	
+		Year	Month	Day	Hour	Minute	Second
+
+After that is Why it was automatically backed up:
+.Startup.csv
+.Changed.csv
+
+If this archive folder ever contains more than 100 backups, the oldest files will automatically be purged to keep the total file count at 100.
+
+If you want to change that value (keep more or less):
+ - Open the info.ini in the folder above (\G6 Mission Inventory\AppData\info.ini)
+ - Change the number value under [Archived Records to Keep]
+
+One small note on changing the value: the Inventory.csv used for demonstration had 840 Lines and was 51KB, when the folder had 100 of them, the folder's size was 5.08 MB. 
+Use that information as you will.

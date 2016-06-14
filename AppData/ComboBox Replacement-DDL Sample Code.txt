@@ -1,0 +1,24 @@
+﻿ 
+
+gLabel for DDL:
+  GuiControlGet, [DDL]
+  if ([DDL] = "Add..."
+    Value := Add(DDLLabel)
+...
+
+
+Add(DDLLabel):
+{
+  if (DDLLabel = [Itm?])
+    WhatIs := "Item type"
+  if (DDLLabel = [Mod?])
+    WhatIs := "Model"
+...
+
+  Gui +OwnDialogs
+  InputBox, NewValue, Add %WhatIs%, Add New %WhatIs%:
+  if (Errorlevel <> 0 or NewValue = ""
+    Return
+  GuiControl, ,[DDL for Item], %NewValue%||       [TEST]
+  Return
+}
