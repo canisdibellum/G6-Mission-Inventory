@@ -73,7 +73,7 @@ Feature Fix: (Something works but it's kluge-y, I can implement better, or is mi
 	 - Figure out how to auto-size filter DDL's to fit contents  
     
 Feature-Add:  
-     - Make spacebar check multi-selection *****IMPORTANT******
+     - Make spacebar check multi-selection *****IMPORTANT******  
 	 - Make Changes popup if other tab selected  
 	 - make ComboBoxes instead be drop-downs with [Add...] option at bottom of list so they have to look through the list before typing something in.  
 	 - Figure way to edit multiple lines at once in "Make Changes"  
