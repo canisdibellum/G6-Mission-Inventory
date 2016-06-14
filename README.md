@@ -46,7 +46,7 @@ To Do:
  / Started  
  x Done  
  ? Not Sure, test  
- * Not Going to do, see [Note] at end  
+ [X] Not Going to do, see [Note] at end  
  > in progress  
     
     
@@ -121,10 +121,10 @@ Done:
  x Make filters have alphabetical, unique list of contents of Category  
  x Make Label Names [–] then number (if that doesn't work find some other ASCII character that doesn't return as a hyphen)  
     
- * add Change sounds to  Edit Menu, for tabs 1 and 4 [Vetoed by Saint Martin]  
- * Item (STOCK NUMBER) [Veto...too vague]  
- * Make Label Correspond to Item NOT location(?)	[veto, too complicated]  
- * Expand ComboBox Dropdowns when clicked	[veto, too complicated]  
+ [X] add Change sounds to  Edit Menu, for tabs 1 and 4 [Vetoed by Saint Martin]  
+ [X] Item (STOCK NUMBER) [Veto...too vague]  
+ [X] Make Label Correspond to Item NOT location(?)	[veto, too complicated]  
+ [X] Expand ComboBox Dropdowns when clicked	[veto, too complicated]  
  x Bug: Issue broken....changes all Serial Numbers to 1  
  x Bug: Turn-In for power supplies cuts off first letter, screws everything up  
  x Fix Filters  
