@@ -1,4 +1,5 @@
 Menu, tray, Icon , %A_ScriptDir%\Images\01.ico, 1, 1
+Version := "1.0.0.0"
 #SingleInstance, Force
 #NoEnv
 #Include %A_ScriptDir%\lib\Functions.ahk
@@ -149,7 +150,7 @@ if (i < 10)
   j := "0" . i
 else
   j := i
-lbl := lblnm . "–" . j  ;Counter Increases Label Number, Label = LabelName–j
+lbl := lblnm . "â€“" . j  ;Counter Increases Label Number, Label = LabelNameâ€“j
 Gui, Font, Bold
 Gui, Add, Text, xp+0 yp+30 h15 w45, Label:
 Gui, Font, Norm
@@ -936,12 +937,12 @@ gosub, lblchange
 Return
 
 lblchange:
-ifinstring,FullLblList,%lblnm%–01
+ifinstring,FullLblList,%lblnm%â€“01
 {
   Highest := 0
   Loop, parse, FullLblList, csv
   {
-    IfNotInString, A_Loopfield, %lblnm%–
+    IfNotInString, A_Loopfield, %lblnm%â€“
       continue
     StringLen, Len, lblnm
     Len += 2
@@ -965,7 +966,7 @@ if (i < 10)
   j := "0" . i
 else
   j := i
-lbl := lblnm . "–" . j
+lbl := lblnm . "â€“" . j
 GuiControl, Text, lbl, %lbl%
 Return
 
@@ -983,7 +984,7 @@ if (ErrorLevel <> 0)
   ;~ j := "0" . i
 ;~ else
   ;~ j := i
-;~ lbl := lblnm . "–" . j
+;~ lbl := lblnm . "â€“" . j
 ;~ GuiControl, Text, lbl, %lbl%
 gosub, lblchange
 Return
@@ -1221,7 +1222,7 @@ if (i < 10)
 else
   j := i
 Line -= 1
-lbl := lblnm . "–" . j
+lbl := lblnm . "â€“" . j
 GuiControl, Text, lbl, %lbl%
 Return
 }
@@ -1620,7 +1621,7 @@ FS:
     
     if (FLoc <> "" and FLoc <> Field1)
       Continue, FOuter
-    FLPos := RegExMatch(Field2, "`–")
+    FLPos := RegExMatch(Field2, "`â€“")
     FLPos -= 1
     StringLeft, LblCheck, Field2, %FLPos%
     if (FLbl <> "" and FLbl <> LblCheck)
@@ -1641,7 +1642,7 @@ FS:
       Continue, FOuter
   
     FLocFList .= "|" . Field1
-    StringGetPos, LblPos, Field2, `–
+    StringGetPos, LblPos, Field2, `â€“
     if(LblPos = -1)
       LblSet := Field2
     else
@@ -1909,7 +1910,7 @@ Return
 
 DeleteItem:
 LV_GetText(RowLabel, Row, 3)
-Loop, Parse, RowLabel, –
+Loop, Parse, RowLabel, â€“
 {
   if A_Index = 1
   {
@@ -1929,7 +1930,7 @@ Loop
 {
   LV_Modify(Row, "Col1", Row)
   LV_GetText(LabelChange, Row, 3)
-  Loop, Parse, LabelChange, –
+  Loop, Parse, LabelChange, â€“
   {
       if A_Index = 1
       {
@@ -1944,7 +1945,7 @@ Loop
           LC := "0" . lblCount
         else
           LC := lblCount
-        LV_Modify(Row, "Col3", DefLabel . "–" . LC)
+        LV_Modify(Row, "Col3", DefLabel . "â€“" . LC)
       }
   }
   Row += 1
@@ -2389,9 +2390,9 @@ Loop, Parse, Inv, `n, `r
     if (A_Index = 2)
     {
       FullLblList .= "`," . A_Loopfield
-      IfInString, A_Loopfield, –
+      IfInString, A_Loopfield, â€“
       {
-        StringGetPos, DL, A_Loopfield, –, R
+        StringGetPos, DL, A_Loopfield, â€“, R
         StringMid, label, A_Loopfield, 1, %DL%
       }
       else
@@ -2591,7 +2592,7 @@ LV_Modify(Line, "Col10", "On-Hand")
 loop %ct%
   LV_ModifyCol(A_Index,"AutoHdr")
 GuiControl, Text, loc, %ILLocName%
-GuiControl, Text, lbl, %ILLocName%–01
+GuiControl, Text, lbl, %ILLocName%â€“01
 SoundPlay, %A_ScriptDir%\Sounds\Change.wav
 Return
 
