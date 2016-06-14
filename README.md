@@ -1,7 +1,7 @@
 # G6-Mission-Inventory
 Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF Reader and Excel  
     
-Version: 1.0.0.0  
+Version: 1.0.1.0  
     
 Version Breakdown:  
     Major UI or functionality change . Feature-Add . Feature-Fix/Bug-Fix . Code Cleanup  
@@ -51,8 +51,10 @@ To Do:
     
     
 BugFixes: (Something acts like it isn't supposed to)  
+	 - Bug: Scanning Registered Item number attempts to add Serial
+		 - Make sure scanned data is analyzed in correct order
+	 - Bug: Choose Customer DDL for Turn-In Broken
 	 - Bug: ComboBoxes broken completely    
-	 - Bug: Still Exports MAC Address if nothing issued    
 	 - bug: not clearing scanned serials from turn-in    
 	 ? bug: not storing StoredSerials [I think I fixed it]    
 	 ? Bug: When you scan registered Number, it keeps the value onto the next scan [Can't Reproduce at home....attempt with scanner]  
@@ -71,6 +73,7 @@ Feature Fix: (Something works but it's kluge-y, I can implement better, or is mi
 	 - Figure out how to auto-size filter DDL's to fit contents  
     
 Feature-Add:  
+     - Make spacebar check multi-selection *****IMPORTANT******
 	 - Make Changes popup if other tab selected  
 	 - make ComboBoxes instead be drop-downs with [Add...] option at bottom of list so they have to look through the list before typing something in.  
 	 - Figure way to edit multiple lines at once in "Make Changes"  
@@ -97,6 +100,11 @@ Still To Do:
 ----------------------------------------------------------  
     
 Done:  
+ x bug: Export MAC exports everything, not just items w/ MAC [1.0.1.0]  
+ x Bug: Continues to Hide MAC stuff even if MAC Present in Inventory [1.0.1.0]
+	 x Maybe because it says "VoIP Phone" instead of just VoIP? {Was looking at an item list IListC that didn't exist} [1.0.1.0]
+ x Bug: Still Exports MAC Address if nothing issued [1.0.1.0]    
+ x Bug: Turn-In for Quantified Items populates field with "QTY" instead of quantity. [1.0.1.0]  
  x Edit BuildInventory:  
    x get rid of anything that messes w/ filters  
    x gosub, FReset    [BuildInventory still has to build other LV's and dropdowns(/combo boxes)]  
