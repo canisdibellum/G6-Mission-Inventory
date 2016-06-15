@@ -1,4 +1,4 @@
-Version := "1.2.1.0"
+Version := "1.3.1.0"
 Menu, tray, Icon , %A_ScriptDir%\Images\01.ico, 1, 1
 SetWorkingDir, %A_ScriptDir%
 #SingleInstance, Force
@@ -605,13 +605,77 @@ CheckMulti:
     if (A_Index > Ttl)
       Break
     if RowNumber in %ChkList%
+    {
       LV_Modify(RowNumber, "-Check")
+    }
     else
       LV_Modify(RowNumber, "+Check")
   }
   Return
 
-
+ChkIL:
+UnChkIL:
+LV_GetText(Location, RowNumber, 2)
+RN := 0
+Loop
+{
+  RN := Search(RN,Location,"2","OHInventory")
+  if not RN
+    Break
+  if (RN = RowNumber)
+    Continue
+  LV_GetText(CModel, RN, 4)
+  LV_GetText(COHQty, RN, 5)
+  LV_GetText(CIQty, RN, 6)
+  if (COHQty = "")
+    COHQty = 0
+  if (CIQty = "")
+    CIQty = 0
+  if (A_ThisLabel = "ChkIL")
+  {
+    LV_Modify(RN,"+Check")
+    if (OHQty + IQty > 1)
+    {
+      Loop 1
+      {
+        Gui +owndialogs
+        if (CIQty > 0)
+          cqty := CIQty
+        else
+          cqty := COHQty
+        InputBox, CQTY, Quantity, How many %Model%s would you like to Issue from this location?, , , , , , , , %Qty%
+        if (CQTY > COHQty)
+        {
+          MsgBox, 4112, Invalid Entry, You cannot issue more than you have!
+          Continue
+        }
+      }
+      if (QTY <= 0 or if errorlevel)
+      {
+        LV_Modify(RN, "-Check")
+        gosub, CountChecked
+        Return
+      }
+    }
+    else
+      CQty := COHQty
+    
+    LV_Modify(RN, "Col6", CQTY)
+    COHQty -= CQty
+    if (COHQty = 0)
+      COHQty := ""
+    LV_Modify(RN, "Col5", COHQTY) 
+  }
+  if (A_ThisLabel = "UnChkIL")
+  {
+    LV_Modify(RN,"-Check")
+    cqty := COHQty + CIQty
+    ;~ msgbox, %cqty% := %COHQty% + %CIQty%
+    LV_Modify(RN, "Col5", cqty)
+    LV_Modify(RN, "Col6", "")
+  }
+}
+Return
 
 CheckMeOut:
 Gui, ListView, OHInventory
@@ -640,12 +704,15 @@ if (WhatHappened = "I")
     OHQty = 0
   if (IQty = "")
     IQty = 0
+  LV_GetText(Text, RowNumber, 1)
   if (InStr(WhatChanged, "c", true))
   {
-
     qty := OHQty + IQty
     LV_Modify(RowNumber, "Col5", QTY)
     LV_Modify(RowNumber, "Col6", "")
+    LV_GetText(Text, RowNumber, 1)
+    if (Text = "Issuable Location")
+      gosub, UnChkIL
     gosub, CountChecked
   }
   if (InStr(WhatChanged, "C", true))
@@ -680,7 +747,9 @@ if (WhatHappened = "I")
     OHQty -= Qty
     if (OHQty = 0)
       OHQty := ""
-    LV_Modify(RowNumber, "Col5", OHQTY)    
+    LV_Modify(RowNumber, "Col5", OHQTY)   
+    if (Text = "Issuable Location")
+      gosub, ChkIL
   }
 }
 
@@ -2104,6 +2173,7 @@ if (editing = "Y")
   GuiControlGet, TabArea      ; get the new selected tab
   If (TabArea <> 2)            ; tab #2 is "disabled" so ...
     GuiControl, Choose, %A_GuiControl%, 2 ; ... reset the selection to the previous selected tab
+  MsgBox, 4112, Making Changes, Please "Apply" or "Cancel" changes before changing tabs.
 }
 
 Return

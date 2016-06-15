@@ -1,7 +1,7 @@
 # G6-Mission-Inventory
 Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF Reader and Excel  
     
-# Version: 1.2.1.0  
+# Version: 1.3.1.0  
     
 ## Version Breakdown:  
     [Major UI or functionality change] . [Feature-Add] . [Feature-Fix/Bug-Fix] . [Code Cleanup]  
@@ -73,15 +73,12 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	 - [ ] Figure out how to auto-size filter DDL's to fit contents  
     
 ## Feature-Add:  
-	 - [ ] Make Changes popup if other tab selected  
 	 - [ ] make ComboBoxes instead be drop-downs with [Add...] option at bottom of list so they have to look through the list before typing something in.  
 	 - [ ] Make Undo Hotkey ^z, make return if tab <> 1 (See if it can be useful on other tabs)  
 	 - [ ] Figure out better colored buttons  
 	     - [ ] Check other gui styles, see if button color change possible  
 	         - [ ] See if WinX style gui available  
 	 - [ ] Look into ifexist C:\Program Files\Microsoft Office 15\root\office15\excel.exe (or detect version and if >2010), don't delete Sheets 2 & 3  
-	 - [ ] When issuing, If user checks IL, check all items in location	[If too complicated, been directed to veto]  
-	    - [ ] RowNumber := 0, RowNumber := Search(RowNumber...) Search for location and check  
 	 - [ ] When scanning in Add to Inventory ScanGUI (and possibly Turn-In) make Splashtext with autochange (item labels [i-<>-<>]) and small tips and tricks (ex. type "undo" to undo and "clear" to clear  
 	     - [ ] make typing "Undo" and "Clear" execute those functions  
     
@@ -98,13 +95,16 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 ______________________________________________________________________________  
     
 # Done: 
-    ----------------------1.2.1.0---------------------- 
+    ----------------------1.3.1.0----------------------   
+	 - [x] When issuing, If user checks IL, check all items in location [1.3.1.0]	 
+	    - [x] RowNumber := 0, RowNumber := Search(RowNumber...) Search for location and check[1.3.1.0]    
+	 - [x] Make Changes popup if other tab selected [1.3.1.0]	 
+    ----------------------1.2.1.0----------------------  
 	 - [x] Figure way to edit multiple lines at once in "Make Changes" [1.2.1.0]  
-
-    ----------------------1.1.1.0---------------------- 
+    ----------------------1.1.1.0----------------------  
 	 - [x] Fix having to right-click twice to edit  [1.1.1.0]  
 	 - [x] Make spacebar check multi-selection *****IMPORTANT******  [1.1.1.0]  
-    ----------------------1.0.1.0----------------------  
+    ----------------------1.0.1.0----------------------   
      - [x] bug: Export MAC exports everything, not just items w/ MAC [1.0.1.0]    
      - [x] Bug: Continues to Hide MAC stuff even if MAC Present in Inventory [1.0.1.0]  
     	 - [x] Maybe because it says "VoIP Phone" instead of just VoIP? {Was looking at an item list IListC that didn't exist} [1.0.1.0]  
