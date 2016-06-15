@@ -1,9 +1,10 @@
-Version := "1.3.1.0"
+Version := "1.4.1.0"
 Menu, tray, Icon , %A_ScriptDir%\Images\01.ico, 1, 1
 SetWorkingDir, %A_ScriptDir%
 #SingleInstance, Force
 #NoEnv
 #Include %A_ScriptDir%\lib\Functions.ahk
+#Include %A_ScriptDir%\lib\ahkstructlib2.ahk
 SplashTextOn, 400, 200, Please Wait, Please wait...`n`nHave some digital patience...
 
 
@@ -28,13 +29,15 @@ global HRTemp := HRDir . "\a2062.pdf"
 Gui,  +resize
 Gui, Font, s10 ;SegoiUI
 Gui, Add, Tab2, x10 y10 w780 h540 BOTTOM vTabArea AltSubmit gsubtab, Add to Inventory|Full Inventory|On-Hand Inventory|Turn-In    ;|Issued
-
+Gui, +LastFound +HwndGui1HWND
 RightClickMenus:
 {
   Menu, GridContext, Add, Edit, EditGui
   Menu, GridContext, Add, Delete, DeleteItem
 
   Menu, CSVContext, Add, Copy Cell, CopyCell
+  Menu, CSVContext, Add,
+  Menu, CSVContext, Add, Edit Cell, EditCellGui
   Menu, CSVContext, Add, Edit Row, EditCSVGui
   Menu, CSVContext, Add, Delete Row, DeleteCSV
   
@@ -1352,14 +1355,181 @@ else
 Return 
 }
 
+
+EditCellGui:
+Gui, 1: Default
+WinGetPos, WinX,WinY,,,ahk_id %Gui1HWND%
+
+
+Array := {}
+TtlC := LV_GetCount("Column")
+loop %TtlC%
+{
+  ColNum := A_Index - 1
+  SendMessage, 0x1000+29, %ColNum%, 0, SysListView322, ahk_id %Gui1HWND%
+  Array.Push(ErrorLevel)
+}
+
+For key, value in Array
+{
+  Clipboard = %key% = %value%
+}
+
+
+
+Col := Column - 1
+SendMessage, 0x1000+29, %Col%, 0, SysListView322, ahk_id %Gui1HWND%
+width_c0 := ErrorLevel
+
+totalW := 0
+Loop, %Col%
+  totalW += Array[A_Index]
+
+XPos := WinX + totalW + 179 + 10
+
+
+ThisRow -= 1
+
+WINGETCLASS, windowType, ahk_id %Gui1HWND%
+WinGet, pid_target, PID, ahk_id %Gui1HWND%
+
+hp_explorer := DllCall( "OpenProcess"
+                       , "uint", 0x18                           ; PROCESS_VM_OPERATION|PROCESS_VM_READ
+                       , "int", false
+                       , "uint", pid_target )
+ 
+  remote_buffer := DllCall( "VirtualAllocEx"
+                       , "uint", hp_explorer
+                       , "uint", 0
+                       , "uint", 0x1000
+                       , "uint", 0x1000                        ; MEM_COMMIT
+                       , "uint", 0x4 )                           ; PAGE_READWRITE
+ 
+  ; LVM_GETITEMRECT
+  ;   LVIR_BOUNDS
+  ;~ MsgBox, %ThisRow%
+  SendMessage, 0x1000+14, %ThisRow%, remote_buffer, SysListView322, ahk_id %Gui1HWND%
+ 
+  VarSetCapacity( rect, 16, 0 )
+  result := DllCall( "ReadProcessMemory"
+                 , "uint", hp_explorer
+                 , "uint", remote_buffer
+                 , "uint", &rect
+                 , "uint", 16
+                 , "uint", 0 )
+ 
+  result := DllCall( "VirtualFreeEx"
+                    , "uint", hp_explorer
+                    , "uint", remote_buffer
+                    , "uint", 0
+                    , "uint", 0x8000 )                           ; MEM_RELEASE
+ 
+  result := DllCall( "CloseHandle", "uint", hp_explorer )
+ 
+  y1 := 0
+  y2 := 0
+  ;~ MsgBox, %&rect%
+  loop, 4
+  {
+    y1 += *( &rect+3+A_Index )
+    y2 += *( &rect+11+A_Index )
+  }
+lv_row_h := y2-y1
+    MsgBox, lv_row_h: %lv_row_h% y1: %y1% y2: %y2%
+YPos := WinY + y1 - 1 + 71 + 10
+;~ YPos := WinY + y1
+
+MsgBox, %XPos% := %WinX% + %totalW% + 179`n%YPos% := %WinY% + %y1% - 1`n%XPos% %YPos%
+FINDME:
+;~ ***********X is perfect...figure out Y****************
+
+/*
+;~ FINDME:
+Struct_Build("RECT", "Int", "Left", "Int", "Top", "Int", "Right", "Int", "Bottom")
+
+SendMessage, 0x1038, %RowNumber%, &Rect, SysListView322, ahk_id %Gui1HWND%
+;~ MsgBox % "Left " . NumGet(Rect, 0, "Int") . " Top " . NumGet(Rect, 4, "Int")
+    ;~ . " Right " . NumGet(Rect, 8, "Int") . " Bottom " . NumGet(Rect, 12, "Int")
+
+MsgBox % "Left " . RECT#Left . " Top " . RECT#Top
+    . " Right " . RECT#Right . " Bottom " . RECT#Bottom
+*/
+
+Blank := "N"
+Gui, ListView, Inventory
+LV_GetText(OldData, Row, Column)
+if (OldData = "")
+{
+  LV_GetText(OldData, 0, Column)
+  Blank := "Y"
+}
+
+
+Gui, EditCell: New
+Gui, EditCell: Margin, 1,1
+Gui, Color, Red
+Gui, -caption -border
+Gui, Add, Edit, x1 y1 -multi vEditData, %OldData%
+Gui, EditCell: Show
+GuiControlGet, EditData, Pos
+Gui, EditCell: Destroy
+
+if (Blank = "Y")
+  OldData = ""
+
+
+Gui, 1: +Disabled
+
+Gui, EditCell: New
+Gui, EditCell: Default
+Gui, EditCell: +owner1
+Gui, +LastFound +HwndGuiHWND
+
+Gui, EditCell: Margin, 1,1
+Gui, Color, Red
+Gui, -caption -border
+Gui, Add, Edit, x1 y1 w%width_c0% h%EditDataH% -multi vEditData, %OldData%
+Gui, Add, Button, h%EditDataH% x+0 y1, OK
+Gui, Add, Button, h%EditDataH% x+0 y1 gEditCancel, Cancel
+
+
+Gui, Show, x%XPos% y%YPos%
+Gui, Show, x%XPos% y%YPos%
+WinWaitClose, ahk_id %GuiHWND%
+Return
+
+
+
+EditCancel:
+EditCellGuiClose:
+EditCellGuiEscape:
+Gui, EditCell: Destroy
+Gui, 1: -Disabled
+Gui, 1: Default
+;~ Gui, 1: +owner1
+;~ WinActivate, ahk_class AutoHotkeyGUI
+WinActivate, ahk_id %Gui1HWND%
+Return
+
+
+
+
+
 GuiContextMenu:
+CoordMode, Mouse, Screen
+MouseGetPos, GuiX, GuiY 
+RowNumber := LV_GetNext("Focused")
 if(A_GuiControl = "Inventory")
 {
+  Gui, 1: Default
+  Gui, ListView, Inventory
   CopiedCell=
   Row=
   Column=
   Row := A_EventInfo
   Column := LV_SubItemHitTest(HLV1)
+  ThisRow := LV_GetNext("Focused")
+  ;~ MsgBox, %ThisRow%
 }
 
 if (editing = "N")
