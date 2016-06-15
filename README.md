@@ -1,7 +1,7 @@
 # G6-Mission-Inventory
 Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF Reader and Excel  
     
-# Version: 1.0.1.0  
+# Version: 1.2.1.0  
     
 ## Version Breakdown:  
     [Major UI or functionality change] . [Feature-Add] . [Feature-Fix/Bug-Fix] . [Code Cleanup]  
@@ -73,10 +73,8 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	 - [ ] Figure out how to auto-size filter DDL's to fit contents  
     
 ## Feature-Add:  
-	 - [ ] Make spacebar check multi-selection *****IMPORTANT******  
 	 - [ ] Make Changes popup if other tab selected  
 	 - [ ] make ComboBoxes instead be drop-downs with [Add...] option at bottom of list so they have to look through the list before typing something in.  
-	 - [ ] Figure way to edit multiple lines at once in "Make Changes"  
 	 - [ ] Make Undo Hotkey ^z, make return if tab <> 1 (See if it can be useful on other tabs)  
 	 - [ ] Figure out better colored buttons  
 	     - [ ] Check other gui styles, see if button color change possible  
@@ -92,15 +90,20 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	 - [ ] Make sure all Inputs handle blank, 0, and Negative Entries  
 	 - [ ] Clear Out old crap and set HRNum to 0  
 	 - [ ] Write Up Documentation, to include commenting, especially Functions  
-	 [/] Disable controls that don't work [I THINK I got em all]  
 	 - [ ] Continue planning and then implement Menus  
+	 - [ ] Comb for unused/old Variables and Subroutines  
    
     
    
 ______________________________________________________________________________  
     
 # Done: 
-  
+    ----------------------1.2.1.0---------------------- 
+	 - [x] Figure way to edit multiple lines at once in "Make Changes" [1.2.1.0]  
+
+    ----------------------1.1.1.0---------------------- 
+	 - [x] Fix having to right-click twice to edit  [1.1.1.0]  
+	 - [x] Make spacebar check multi-selection *****IMPORTANT******  [1.1.1.0]  
     ----------------------1.0.1.0----------------------  
      - [x] bug: Export MAC exports everything, not just items w/ MAC [1.0.1.0]    
      - [x] Bug: Continues to Hide MAC stuff even if MAC Present in Inventory [1.0.1.0]  
@@ -108,6 +111,7 @@ ______________________________________________________________________________
      - [x] Bug: Still Exports MAC Address if nothing issued [1.0.1.0]      
      - [x] Bug: Turn-In for Quantified Items populates field with "QTY" instead of quantity. [1.0.1.0]      
     ----------------------Pre-1.0.0.0----------------------  
+	 - [x] Disable controls that don't work  
      - [x] Edit BuildInventory:  
        - [x] get rid of anything that messes w/ filters  
        - [x] gosub, FReset    [BuildInventory still has to build other LV's and dropdowns(/combo boxes)]  

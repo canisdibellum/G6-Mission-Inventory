@@ -1,10 +1,11 @@
-Version := "1.0.1.0"
+Version := "1.2.1.0"
 Menu, tray, Icon , %A_ScriptDir%\Images\01.ico, 1, 1
 SetWorkingDir, %A_ScriptDir%
 #SingleInstance, Force
 #NoEnv
 #Include %A_ScriptDir%\lib\Functions.ahk
 SplashTextOn, 400, 200, Please Wait, Please wait...`n`nHave some digital patience...
+
 
 loc := "Location", mod := "Model", lblnm := "Label", itm := "Item", i := 1, CT := 7, CE := 1, voipyn := "N", editing := "N", TIItems :=0      ;Default Values
 global XML := A_ScriptDir . "\XML\Import"
@@ -33,8 +34,13 @@ RightClickMenus:
   Menu, GridContext, Add, Edit, EditGui
   Menu, GridContext, Add, Delete, DeleteItem
 
-  Menu, CSVContext, Add, Edit, EditCSVGui
-  Menu, CSVContext, Add, Delete, DeleteCSV
+  Menu, CSVContext, Add, Copy Cell, CopyCell
+  Menu, CSVContext, Add, Edit Row, EditCSVGui
+  Menu, CSVContext, Add, Delete Row, DeleteCSV
+  
+  Menu, CSVContextMulti, Add, Edit Multiple, EditCSVMultiGui
+  Menu, CSVContextMulti, Add, Delete Rows, DeleteCSVMulti
+  
 
   Menu, NormalContext, Add, Copy, CopyCell
 
@@ -49,11 +55,13 @@ TabMenus:
 Menu, MenuBar, Add, &Items, :ItemsMenu
 Gui, Menu, MenuBar
 
-
 Lists := "LocList|LblList|IList|MList|ITList|NoSNIList|CBIlist"
 FLists := "FLocList|FLblList|FIList|FMList|FITList|FNoSNIList"
 FFLists := "FLocFList|FLblFList|FIFList|FMFList|FITFList|FSFList"
+MLists := "MLocList|Null|MItmList|MModList|Null|Null|Null|MITList|MSList"
+MControls := "MLocation|MItem|MModel|MIT|MS"
 
+MArray := {MLocation: 1, MItem: 3, MModel: 4, MIT: 8, MS: 9}
 
 Fields=
 (
@@ -71,22 +79,17 @@ Controls=
 (
 MakeChanges
 ExpMAC
-ExpXL
+ExpToXLGUI
 FLoc
 FLbl
 FI   
 FM
 FIT
+FS
 FReset
 DA2062
 )
-;~ FLoc
-;~ FLbl
-;~ FI   
-;~ FM       ;Put these back in %Controls% when they work
-;~ FIT
-;~ FReset
-;~ DA2062
+
 
 Filters := "FLoc|FLbl|FI|FM|FIT|FS"
 SmFilters := "FLoc|FLbl|FI|FM|FS"
@@ -568,6 +571,48 @@ ChgQty:
 Return
 
 
+~Space::
+GuiControlGet, OutputVar, FocusV
+if (OutputVar = "OHInventory")
+{
+  LV := OutputVar
+  gosub, CheckMulti
+}
+Return
+
+
+CheckMulti:
+  Gui, ListView, %LV%
+  RowNumber := LV_GetNext(0,"Focused")
+  LV_Modify(RowNumber, "-Focus")
+  Ttl := LV_GetCount("Selected")
+  ChkList := ""
+  RowNumber := 0
+  Loop
+  {
+    RowNumber := LV_GetNext(RowNumber, "Checked")
+    if not RowNumber
+      Break
+    
+    ChkList .= RowNumber . "`,"
+  }
+  RowNumber := 0
+  Loop
+  {
+    RowNumber := LV_GetNext(RowNumber)
+    if not RowNumber
+      Break
+    if (A_Index > Ttl)
+      Break
+    if RowNumber in %ChkList%
+      LV_Modify(RowNumber, "-Check")
+    else
+      LV_Modify(RowNumber, "+Check")
+  }
+  Return
+
+
+
 CheckMeOut:
 Gui, ListView, OHInventory
 Critical
@@ -605,11 +650,6 @@ if (WhatHappened = "I")
   }
   if (InStr(WhatChanged, "C", true))
   {
-    ;~ Gui +LastFound
-    ;~ Gui, Listview, OHInventory
-    ;~ SendMessage, 4140, RowNumber - 1, 0xF000, SysListView321  ; 4140 is LVM_GETITEMSTATE.  0xF000 is LVIS_STATEIMAGEMASK.
-    ;~ IsChecked := (ErrorLevel >> 12) - 1  ; This sets IsChecked to true if RowNumber is checked or false otherwise.
-
     if (OHQty + IQty > 1)
     {
       Loop 1
@@ -714,7 +754,7 @@ loop, parse, CheckedItems, `n, `r
   }
 }
 
-GuiControl, Focus, SelectedI
+;~ GuiControl, Focus, SelectedI
 GuiControl, +AltSubmit, OHInventory
 Return
 
@@ -1244,6 +1284,15 @@ Return
 }
 
 GuiContextMenu:
+if(A_GuiControl = "Inventory")
+{
+  CopiedCell=
+  Row=
+  Column=
+  Row := A_EventInfo
+  Column := LV_SubItemHitTest(HLV1)
+}
+
 if (editing = "N")
 {
   if(A_GuiControl <> "ScanGUIAdd" and A_GuiControl <> "Inventory")
@@ -1259,11 +1308,18 @@ if(A_EventInfo = 0)
 Row := A_EventInfo
 
 if (editing = "Y")
-  Menu, CSVContext, Show, %A_GuiX%, %A_GuiY%
+{
+  Gui, ListView, Inventory
+  Ttl := LV_GetCount("Selected")
+  if (Ttl > 1)
+    Menu, CSVContextMulti, Show, %A_GuiX%, %A_GuiY%
+  else
+    Menu, CSVContext, Show, %A_GuiX%, %A_GuiY%
+}
 else if (editing = "N" and A_GuiControl = "ScanGUIAdd")
   Menu, GridContext, Show, %A_GuiX%, %A_GuiY%
-;~ else if (editing = "N" and A_GuiControl = "Inventory")
-  ;~ Menu, NormalContext, Show, %A_GuiX%, %A_GuiY%
+else if (editing = "N" and A_GuiControl = "Inventory")
+  Menu, NormalContext, Show, %A_GuiX%, %A_GuiY%
 Return
 
 
@@ -2037,6 +2093,7 @@ gosub, Controls
 Guicontrol, Show, Apply
 Guicontrol, Show, Cancel
 editing := "Y"
+GuiControl, +Multi, Inventory
 SplashTextOff
 Return
 
@@ -2060,6 +2117,7 @@ gosub, Controls
 Guicontrol, Hide, Apply
 Guicontrol, Hide, Cancel
 editing := "N"
+GuiControl, -Checked, Inventory
 SplashTextOff
 Return
 
@@ -2340,15 +2398,15 @@ Return
 
 
 SubLV:
-If (A_GuiEvent = "RightClick") {
-      CopiedCell=
-      Row=
-      Column=
-      Row := A_EventInfo
-      Column := LV_SubItemHitTest(HLV1)
-      MouseGetPos, VarX, VarY
-      Menu, NormalContext, Show, %VarX%, %VarY%
-   }
+;~ If (A_GuiEvent = "RightClick") {
+      ;~ CopiedCell=
+      ;~ Row=
+      ;~ Column=
+      ;~ Row := A_EventInfo
+      ;~ Column := LV_SubItemHitTest(HLV1)
+      ;~ MouseGetPos, VarX, VarY
+      ;~ Menu, NormalContext, Show, %VarX%, %VarY%
+   ;~ }
 Return
 
 CopyCell:
@@ -2783,10 +2841,6 @@ if (Test <> "ERROR")
 }
 
 iniwrite, %IType%\%IMod%, %ini%, RegisteredItems, %INum%
-;~ gosub, RIGuiClose
-;~ Gui, RI:Destroy
-;~ Gui, 1:Default
-;~ MsgBox, Are Variables dumped? %IMod%
 RIList .= "|" . IType
 Sort, RIList, D| U
 Sort, RIList
@@ -2847,52 +2901,110 @@ ControlFocus, VScan
 GuiControl, Text, VScan,
 Return
 
-#Z::         ;DELETE THIS AFTER TESTING
-BuildSetFilters:
-;~ SplashTextOn, 400, 200, Please Wait, Please wait...`n`nHave some digital patience...
-SelCols := "1|2|3|4|7|8"
-FInfo := GrabView(SelCols,"Inventory","NO")   
-  /*
-  Returns "," separated list from current view based on criteria, commas are ~
-  SelCols: Which Columns to grab, formatted 1|2|5|8
-  LV: Which Listview, "ScanGuiAdd", "Inventory", "OHInventory" or "TIInventory"
-  Issue: "YES" will only collect Checked Items, "NO" grabs all
-  */
-;~ Firstus is the Header on each Filter, `n separated lines, all with trailing "|" 
-StringReplace, FInfo, FInfo, `,, |, All
-StringReplace, FInfo, FInfo, `~, `,, All
-loop, Parse, Filters, |
-  GuiControl, , %A_Loopfield%, |
-;~ Return
-StringSplit, FName, Filters, |
-StringSplit, FHdr, Firstus, `n, `r
-Loop, Parse, FInfo
+
+EditCSVMultiGui:
+Gui, 1: Default
+Gui, ListView, Inventory
+MLocList := "", MItmList := "", MModList := "", MITList := "", MSList := "" 
+RowNumber := 0
+Loop
 {
-  StringSplit, Col, FInfo, |
-  Loop, 6
+  if (A_Index > Ttl)
+    Break
+  RowNumber := LV_GetNext(RowNumber)
+  If Not RowNumber
+    Break
+  Index := A_Index
+  Loop, Parse, MLists, |
   {
-    FNmTemp := "FName" . A_Index
-    FName := %FNmTemp%
-    FTemp := "Col" . A_Index
-    FCol := %FTemp%
-    MsgBox, %FName%
-    %FName% .= %FCol% . "|"
-    
+    LV_GetText(Text, RowNumber, A_Index)
+    %A_Loopfield% .= Text
+    if (Index <> Ttl)
+      %A_Loopfield% .= "|"
   }
-  
+  EditRows .= RowNumber
+  if (Index <> Ttl)
+      EditRows .= "|"
 }
-;~ MsgBox, %Floc% %FIT% 
-MsgBox, %FLoc%`n%FLbl%`n%FI%`n%FM%`n%FIT%`n%FS%
-Return
-loop, Parse, Filters, |
+Null := ""
+Loop, Parse, MLists, |
+{
   Sort, %A_Loopfield%, D| U
+  Loop, Parse, %A_Loopfield%, |
+    Number := A_Index
+  if (Number > 1)
+    %A_Loopfield% := "[Keep Same]"
+}
 
-loop, Parse, Filters, |
+Gui, 1: +Disabled
+Gui, EditMulti: New
+Gui, EditMulti: Default
+Gui, EditMulti: +owner1
+Gui, +LastFound +HwndGuiHWND
+Gui, Add, Text, y20 x20 , Edit Location:
+Gui, Add, Edit, x+5 yp-2 w200 -Multi vMLocation,%MLocList%
+
+Gui, Add, Text, y+10 x20 , Edit Item Type:
+Gui, Add, Edit, x+5 yp-2  w200 -Multi vMItem, %MItmList%
+
+Gui, Add, Text, y+10 x20 , Edit Model:
+Gui, Add, Edit, x+5 yp-2  w200 -Multi vMModel, %MModList%
+
+Gui, Add, Text, y+10 x20 , Edit Issued To:
+Gui, Add, Edit, x+5 yp-2  w200 -Multi vMIT, %MITList%
+
+Gui, Add, Text, y+10 x20 , Edit Issue Status:
+Gui, Add, Edit, x+5 yp-2  w200 -Multi vMS, %MSList%
+
+Gui, Add, Button, y+10 x20 h30 w50 gEditCSVMulti, Edit
+Gui, Add, Button, yp+0 x+10 h30 w50 gButtonCancel, Cancel
+Gui, Show,, Edit Multiple Rows
+WinWaitClose, ahk_id %GuiHWND%
+Return
+
+EditCSVMulti:
+Gui, EditMulti: submit, nohide
+Gui, 1: Default
+Gui, ListView, Inventory
+Loop, parse, EditRows, |
+{
+  RowNumber := A_Loopfield
+  Loop, parse, MControls, |
+  {
+    if (%A_Loopfield% = "[Keep Same]")
+      Continue
+    Col := "Col" . MArray[A_Loopfield]
+    LV_Modify(RowNumber, Col, %A_Loopfield%)
+  }
+}
+
+ButtonCancel:
+EditMultiGuiClose:
+EditMultiGuiEscape:
+Gui, EditMulti: Destroy
+Gui, 1: -Disabled
+Gui, 1: Default
+;~ Gui, 1: +owner1
+WinActivate, ahk_class AutoHotkeyGUI
+Return
 
 
-FHdr := "FHdr" . A_Index
-  
 
-
-SplashTextOff
+DeleteCSVMulti:
+Ttl := LV_GetCount("Selected")
+RowNumber := 0
+Loop
+{
+  if (A_Index > Ttl)
+    Break
+  RowNumber := LV_GetNext(RowNumber)
+  if not RowNumber
+    Break
+  Rows2Delete .= RowNumber
+  if (A_Index <> Ttl)
+    Rows2Delete .= "|"
+}
+Sort, Rows2Delete, D| N R
+Loop, parse, Rows2Delete, |
+  LV_Delete(A_Loopfield)
 Return
