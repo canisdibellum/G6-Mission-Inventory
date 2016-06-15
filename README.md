@@ -1,7 +1,7 @@
 # G6-Mission-Inventory
 Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF Reader and Excel  
     
-# Version: 1.3.1.0  
+# Version: 1.4.1.0  
     
 ## Version Breakdown:  
     [Major UI or functionality change] . [Feature-Add] . [Feature-Fix/Bug-Fix] . [Code Cleanup]  
@@ -81,6 +81,9 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	 - [ ] Look into ifexist C:\Program Files\Microsoft Office 15\root\office15\excel.exe (or detect version and if >2010), don't delete Sheets 2 & 3  
 	 - [ ] When scanning in Add to Inventory ScanGUI (and possibly Turn-In) make Splashtext with autochange (item labels [i-<>-<>]) and small tips and tricks (ex. type "undo" to undo and "clear" to clear  
 	     - [ ] make typing "Undo" and "Clear" execute those functions  
+	 - [>] Edit Individual cells 
+	     - [>] Made Gui, made it popup....get better positioning...find col width, find upper left corner of cell    
+	 - [ ] Run reports Menu Item....Pop up Msg Box with all stats and option to export to text file.
     
 ## General To Do:  
 	 [/] Test all controls make sure everything is Nominal [ScanGUI seems to be fine after private testing, real testing commences tomorrow]  
