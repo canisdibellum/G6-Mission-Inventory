@@ -1,10 +1,10 @@
-Version := "1.4.1.0"
+Version := "2.0.1.0"
 Menu, tray, Icon , %A_ScriptDir%\Images\01.ico, 1, 1
 SetWorkingDir, %A_ScriptDir%
 #SingleInstance, Force
 #NoEnv
 #Include %A_ScriptDir%\lib\Functions.ahk
-#Include %A_ScriptDir%\lib\ahkstructlib2.ahk
+#Include %A_ScriptDir%\lib\_struct.ahk
 SplashTextOn, 400, 200, Please Wait, Please wait...`n`nHave some digital patience...
 
 
@@ -63,6 +63,7 @@ FLists := "FLocList|FLblList|FIList|FMList|FITList|FNoSNIList"
 FFLists := "FLocFList|FLblFList|FIFList|FMFList|FITFList|FSFList"
 MLists := "MLocList|Null|MItmList|MModList|Null|Null|Null|MITList|MSList"
 MControls := "MLocation|MItem|MModel|MIT|MS"
+BLists := "IList|LocList|MAList|ITList|NoSNIList"
 
 MArray := {MLocation: 1, MItem: 3, MModel: 4, MIT: 8, MS: 9}
 
@@ -145,8 +146,8 @@ Gui, Add, ComboBox, xp+0 yp+20 R20 w150 vloc glblchangeloc, Select or Type Here|
 Gui, Font, Bold
 Gui, Add, Text, xp+0 yp+30 h15 w150, Item:
 Gui, Font, Norm
-Gui, Add, ComboBox, xp+0 yp+20 R5 w150 vitm gitm, Select or Type Here|%IList%
-GuiControl, Text, itm, Item
+Gui, Add, ComboBox, xp+0 yp+20 R5 w150 vitm gitm Hwnditmhwnd, Select or Type Here|%IList%
+;~ GuiControl, Text, itm, Item
 
 Gui, Font, Bold
 Gui, Add, Text, xp+0 yp+30 h15 w150, Model:
@@ -263,9 +264,9 @@ SetComboBoxes:
 ;~ Loop, Parse, Flists, |
   ;~ GuiControl, Choose, %A_Loopfield%, 1
 
-GuiControl,, itm, |Select or Type Here|%CBIList%
+GuiControl,, itm, |Select or Type Here|%IList%
 GuiControl,, Loc, |Select or Type Here|%LocList%
-GuiControl,, Mod, |Select or Type Here|%MList%
+GuiControl,, Mod, |Select Item First
 loop, Parse, Combos, |
   GuiControl, Choose, %A_Loopfield%, 1
  }
@@ -279,6 +280,13 @@ if qCount
 else
   GuiControl, Choose,TabArea, 1
 PostMessage, 0x014E, -1, 0,,ahk_id %hwndvar%
+Gui, ListView, ScanGUIAdd
+LV_ModifyCol(6,0)
+loop, 3
+{
+  Col := A_Index + 7
+  LV_ModifyCol(Col,0)
+}
 SplashTextOff
 return
 
@@ -303,27 +311,24 @@ Return
 	Gui, Font, Bold
 	Gui, Add, Text, x10 y10, Item: (ex. Power Supply)
 	Gui, Font, Norm
-	Gui, Add, ComboBox, xp+0 y+5 R5 w200 vNOSNitm gNoSNitm, Select or Type Here|%NoSNIList%
+	Gui, Add, ComboBox, xp+0 y+5 R5 w200 vNOSNitm gNoSNitm Choose1, Select or Type Here|%NoSNIList%
 
 	Gui, Font, Bold
 	Gui, Add, Text, xp+0 y+30, Description: (ex. Power Supply, Laptop)
 	Gui, Font, Norm
-	Gui, Add, ComboBox, xp+0 y+5 R5 w200 vNOSNMod, Select Item First
+	Gui, Add, ComboBox, xp+0 y+5 R5 w350 vNOSNMod Choose1, Select Item First
 
 	Gui, Font, Bold
 	Gui, Add, Text, xp+0 y+30, Quantity to Add:
 	Gui, Font, Norm
 	Gui, Add, Edit, xp+0 y+5 w90  vNOSNQty, 0
-	Gui, Add, UpDown, ;x+150 yp+0
+	Gui, Add, UpDown,
 
 	Gui, Add, Button, xp+0 y+30 h50 w100 gNOSNAddtoGrid, Add
 	Gui, Add, Button, x290 yp+0 h50 w100 gNOSNClear, Clear
 
 
 	GuiControl, Disable, NOSNMod
-	GuiControl, Choose, NOSNloc, 1
-	GuiControl, Choose, NOSNitm, 1
-	GuiControl, Choose, NOSNMod, 1
 	Gui, Show, w400, Add Non-Serialized Items
   Gui, 5: +owner1
   Gui, 1: +Disabled
@@ -365,23 +370,18 @@ Return
 	Gui, ListView, ScanGuiAdd
 	LV_Add("",Line, NOSNItm, , NOSNItm, NOSNMod, NOSNQty)
 	LV_Modify(Line,"Col10","On-Hand")
-  loop %ct%
-  {
-    if (A_Index <= 7)
-      LV_ModifyCol(A_Index,"AutoHdr")
-    if (A_Index = 8 and voipyn = "Y")
-      LV_ModifyCol(A_Index,"AutoHdr")
-    if (A_Index = 8 and voipyn = "N")
-      LV_ModifyCol(A_Index,0)
-    if (A_Index > 8)
-      LV_ModifyCol(A_Index,0)
-  }
+  loop 7
+    LV_ModifyCol(A_Index,"AutoHdr")
+  if (voipyn = "Y")
+      LV_ModifyCol(8,"AutoHdr")
   Gui, 5:Destroy
+  WinActivate, Ahk_ID %Gui1HWND%
 	Return
 
 	NOSNClear:
 	Gui, 5:Destroy
 	gosub, NoSNAddGui
+  WinActivate, Ahk_ID %Gui1HWND%
 	Return	
 
 
@@ -856,7 +856,8 @@ if (IssueTo = -1)
   SplashTextOn, 400, 200, Please Wait, Please wait...`n`nHave some digital patience...
 Gui, 1:Default
 
-gosub, BuildLVInventory
+Issuing := "YES"
+gosub, BuildInventory
 ;~ gosub, BuildInventory
 RowNumber = 0  ; This causes the first loop iteration to start the search at the top of the list.
 Loop
@@ -1121,6 +1122,7 @@ SSList := SList . "|"
 SSList .= CompileList("All", "Serial", "Serial", "ScanGuiAdd", AddColList)
 OBreak := "NO"
 BacktoOuter := "NO"
+iniread, RegisteredItems, %ini%, RegisteredItems
 
 Outer:
 Loop
@@ -1189,6 +1191,10 @@ Loop
     OBreak := "YES"
     Return
   }
+  Check := Col7
+  gosub, CheckScan
+  if (BacktoOuter = "YES")
+    Return
   Srch := "`|" . Col7 . "`|"
   IfNotInString, SSList, %Srch%
     break, ScanMe
@@ -1207,8 +1213,8 @@ Loop
       Break, ScanMe
   }
 }
-Check := Col7
-gosub, CheckScan
+;~ Check := Col7
+;~ gosub, CheckScan
 ;~ MsgBox, %OBreak% %BacktoOuter%
 if (OBreak = "YES" or BacktoOuter = "YES")
   Return
@@ -1231,6 +1237,8 @@ Return
 
 
 CheckScan:
+;~ iniread, RegisteredItems, %ini%, RegisteredItems
+;~ MsgBox, %RegisteredItems%
 ifinstring, RegisteredItems, %Check%=
 {
   iniread, InfoLookup, %ini%, RegisteredItems, %Check%
@@ -1355,12 +1363,7 @@ else
 Return 
 }
 
-
-EditCellGui:
-Gui, 1: Default
-WinGetPos, WinX,WinY,,,ahk_id %Gui1HWND%
-
-
+CalculateWandX:
 Array := {}
 TtlC := LV_GetCount("Column")
 loop %TtlC%
@@ -1370,13 +1373,6 @@ loop %TtlC%
   Array.Push(ErrorLevel)
 }
 
-For key, value in Array
-{
-  Clipboard = %key% = %value%
-}
-
-
-
 Col := Column - 1
 SendMessage, 0x1000+29, %Col%, 0, SysListView322, ahk_id %Gui1HWND%
 width_c0 := ErrorLevel
@@ -1384,98 +1380,67 @@ width_c0 := ErrorLevel
 totalW := 0
 Loop, %Col%
   totalW += Array[A_Index]
+Return
+
+
+
+EditCellGui:
+Gui, 1: Default
+Gui, ListView, Inventory
+
+WinGetPos, WinX,WinY,,,ahk_id %Gui1HWND%
+
+gosub, CalculateWandX
+;~ Array := {}
+;~ TtlC := LV_GetCount("Column")
+;~ loop %TtlC%
+;~ {
+  ;~ ColNum := A_Index - 1
+  ;~ SendMessage, 0x1000+29, %ColNum%, 0, SysListView322, ahk_id %Gui1HWND%
+  ;~ Array.Push(ErrorLevel)
+;~ }
+
+;~ Col := Column - 1
+;~ SendMessage, 0x1000+29, %Col%, 0, SysListView322, ahk_id %Gui1HWND%
+;~ width_c0 := ErrorLevel
+
+;~ totalW := 0
+;~ Loop, %Col%
+  ;~ totalW += Array[A_Index]
 
 XPos := WinX + totalW + 179 + 10
 
+ThisRow += 1
 
-ThisRow -= 1
+VarSetCapacity(_RECT,16)
+_RECT:="left,top,right,bottom"
+RC := new _Struct(_RECT)                      ;create structure
+SendMessage, 0x100e, %ThisRow%, RC[], SysListView322, ahk_id %Gui1HWND%
+YPos := WinY + rc.top + 71 + 11
+HPos := rc.bottom - rc.top
 
-WINGETCLASS, windowType, ahk_id %Gui1HWND%
-WinGet, pid_target, PID, ahk_id %Gui1HWND%
-
-hp_explorer := DllCall( "OpenProcess"
-                       , "uint", 0x18                           ; PROCESS_VM_OPERATION|PROCESS_VM_READ
-                       , "int", false
-                       , "uint", pid_target )
- 
-  remote_buffer := DllCall( "VirtualAllocEx"
-                       , "uint", hp_explorer
-                       , "uint", 0
-                       , "uint", 0x1000
-                       , "uint", 0x1000                        ; MEM_COMMIT
-                       , "uint", 0x4 )                           ; PAGE_READWRITE
- 
-  ; LVM_GETITEMRECT
-  ;   LVIR_BOUNDS
-  ;~ MsgBox, %ThisRow%
-  SendMessage, 0x1000+14, %ThisRow%, remote_buffer, SysListView322, ahk_id %Gui1HWND%
- 
-  VarSetCapacity( rect, 16, 0 )
-  result := DllCall( "ReadProcessMemory"
-                 , "uint", hp_explorer
-                 , "uint", remote_buffer
-                 , "uint", &rect
-                 , "uint", 16
-                 , "uint", 0 )
- 
-  result := DllCall( "VirtualFreeEx"
-                    , "uint", hp_explorer
-                    , "uint", remote_buffer
-                    , "uint", 0
-                    , "uint", 0x8000 )                           ; MEM_RELEASE
- 
-  result := DllCall( "CloseHandle", "uint", hp_explorer )
- 
-  y1 := 0
-  y2 := 0
-  ;~ MsgBox, %&rect%
-  loop, 4
-  {
-    y1 += *( &rect+3+A_Index )
-    y2 += *( &rect+11+A_Index )
-  }
-lv_row_h := y2-y1
-    MsgBox, lv_row_h: %lv_row_h% y1: %y1% y2: %y2%
-YPos := WinY + y1 - 1 + 71 + 10
-;~ YPos := WinY + y1
-
-MsgBox, %XPos% := %WinX% + %totalW% + 179`n%YPos% := %WinY% + %y1% - 1`n%XPos% %YPos%
-FINDME:
-;~ ***********X is perfect...figure out Y****************
-
-/*
-;~ FINDME:
-Struct_Build("RECT", "Int", "Left", "Int", "Top", "Int", "Right", "Int", "Bottom")
-
-SendMessage, 0x1038, %RowNumber%, &Rect, SysListView322, ahk_id %Gui1HWND%
-;~ MsgBox % "Left " . NumGet(Rect, 0, "Int") . " Top " . NumGet(Rect, 4, "Int")
-    ;~ . " Right " . NumGet(Rect, 8, "Int") . " Bottom " . NumGet(Rect, 12, "Int")
-
-MsgBox % "Left " . RECT#Left . " Top " . RECT#Top
-    . " Right " . RECT#Right . " Bottom " . RECT#Bottom
-*/
 
 Blank := "N"
 Gui, ListView, Inventory
 LV_GetText(OldData, Row, Column)
-if (OldData = "")
-{
-  LV_GetText(OldData, 0, Column)
-  Blank := "Y"
-}
+;~ if (OldData = "")
+;~ {
+  ;~ LV_GetText(OldData, 0, Column)
+  ;~ Blank := "Y"
+;~ }
 
 
-Gui, EditCell: New
-Gui, EditCell: Margin, 1,1
-Gui, Color, Red
-Gui, -caption -border
-Gui, Add, Edit, x1 y1 -multi vEditData, %OldData%
-Gui, EditCell: Show
-GuiControlGet, EditData, Pos
-Gui, EditCell: Destroy
+;~ Gui, EditCell: New
+;~ Gui, EditCell: Margin, 1,1
+;~ Gui, Color, Red
+;~ Gui, -caption -border
+;~ Gui, Add, Edit, x1 y1 -multi vEditData, %OldData%
+;~ Gui, EditCell: Show
+;~ GuiControlGet, EditData, Pos
+;~ Gui, EditCell: Destroy
 
-if (Blank = "Y")
-  OldData = ""
+;~ if (Blank = "Y")
+  ;~ OldData = ""
 
 
 Gui, 1: +Disabled
@@ -1488,9 +1453,12 @@ Gui, +LastFound +HwndGuiHWND
 Gui, EditCell: Margin, 1,1
 Gui, Color, Red
 Gui, -caption -border
-Gui, Add, Edit, x1 y1 w%width_c0% h%EditDataH% -multi vEditData, %OldData%
-Gui, Add, Button, h%EditDataH% x+0 y1, OK
-Gui, Add, Button, h%EditDataH% x+0 y1 gEditCancel, Cancel
+Gui, Add, Edit, x1 y1 w%width_c0% h%HPos% -multi vEditData, %OldData%
+Gui, Add, Button, h%HPos% x+0 y1 gEditApply, OK
+Gui, Add, Button, h%HPos% x+0 y1 gEditCancel, Cancel
+;~ Gui, Add, Edit, x1 y1 w%width_c0% h%EditDataH% -multi vEditData, %OldData%
+;~ Gui, Add, Button, h%EditDataH% x+0 y1, OK
+;~ Gui, Add, Button, h%EditDataH% x+0 y1 gEditCancel, Cancel
 
 
 Gui, Show, x%XPos% y%YPos%
@@ -1498,6 +1466,16 @@ Gui, Show, x%XPos% y%YPos%
 WinWaitClose, ahk_id %GuiHWND%
 Return
 
+
+EditApply:
+Gui, EditCell:Submit
+Gui, 1: Default
+Gui, ListView, Inventory
+Col := "Col" . Column
+;~ MsgBox, %Row%, %Column%, %EditData%
+LV_Modify(Row, Col, EditData)
+gosub, EditCancel
+Return
 
 
 EditCancel:
@@ -1695,149 +1673,121 @@ return
 BuildInventory:
 {
 SplashTextOn, 400, 200, Please Wait, Please wait...`n`nHave some digital patience...
-GuiControlGet, CustomerSelect,,CustomerSelect
-LocList=
-LblList=
-IList=
-MList=
-ITList=
-Inv=
-CustSNList=
-
-Gui, ListView, Inventory
-LV_Delete()
-Gui, ListView, OHInventory
-LV_Delete()
-Gui, ListView, TIInventory
-LV_Delete()
-FileRead, Inv, %csvF%
-Sort, Inv
-StringTrimRight, Inv, Inv, 2
-Loop, Parse, Inv, `n, `r
+Gui, 1: Default
+FileRead, FInv, %csvF%
+StringReplace, FInv, FInv, `,, \, All
+StringReplace, FInv, FInv, ~, `,, All
+sort, FInv, \
+IList := "", LocList := "", MAList := "", ITList := "", NoSNIList := ""
+StringSplit, List, Lists, |
+Loop, parse, FInv, `n, `r
 {
-  RowNum := A_Index
-  Loop, Parse, A_Loopfield, csv
-  {
-    Column := "Col" . A_Index
-    %Column% := A_Loopfield
-    StringReplace, %Column%, %Column%, `~, `,, All
-    if (A_Index = 1)
-    {
-      LocList .= "`|" . A_Loopfield
-      FLocList .= "`|" . A_Loopfield
-    }
-    if (A_Index = 2)
-    {
-      FullLblList .= "`," . A_Loopfield
-      IfInString, A_Loopfield, `-
-      {
-        StringGetPos, DL, A_Loopfield, `-, R
-        StringMid, label, A_Loopfield, 1, %DL%
-      }
-      else
-        label := A_Loopfield
-      LblList .= "`|" . label
-      FLblList .= "`|" . label
-    }
-    if (A_Index = 3)
-    {
-      if (A_Loopfield <> "Issuable Location")
-        CBIList .= "`|" . A_Loopfield
-      IList .= "`|" . A_Loopfield
-      FIList .= "`|" . A_Loopfield
-    }
-    if (A_Index = 4)
-    {
-      MList .= "`|" . A_Loopfield
-      FMList .= "`|" . A_Loopfield
-    }
-    if (A_Index = 6)
-    {
-      SList .= "|" . A_Loopfield . "|"
-      if (A_Loopfield = "")
-      {
-        NoSNIList .= "|" . Col3
-        FNoSNIList .= "|" . Col3
-      }
-    }
-    if (A_Index = 8)
-    {
-      ITList .= "|" . A_Loopfield
-      FITList .= "|" . A_Loopfield
-    }
-  }
-  Gui, ListView, Inventory
-  LV_Add("",Col1,Col2,Col3,Col4,Col5,Col6,Col7,Col8,Col9)
-  if (Col8 = "" or Col9 = "Turned In")
-  {
-    Gui, ListView, OHInventory
-    LV_Add("",Col3,Col1,Col2,Col4,Col5,"",Col6,Col7)
-  }
-  if (Col8 = CustomerSelect and CustomerSelect <> "Choose Customer" and CustomerSelect <> "")
-  {
-    Gui, ListView, TIInventory
-    LV_Add("",Col6,Col1,Col2,Col3,Col4,Col5,Col7)
-    CustSNList .= "|" . Col6 . "|"
-  }
-    
+	StringSplit, Field, A_Loopfield, \
+	/*
+	Field1 = Location
+	Field2 = Label
+	Field3 = Item
+	Field4 = Model
+	Field5 = Qty
+	Field6 = Serial
+	Field7 = MAC Address
+	Field8 = Issued To
+	Field9 = Status
+	*/
+	
+	;Build list of MAC Addresses (to check if empty) and Customers Issued To (For TI ComboBox and CustGui, and any other time a list of customers is needed)
+	if (A_Index <> 1)
+	{
+		MAList .= "|"
+		ITList .= "|"
+	}
+	MAList .= Field7
+	ITList .= Field8
+	
+	;If Serial isn't Blank, Populate Item (IList) and Location (LocList) Lists for ScanGUI ComboBoxes
+	if(Field6 <> "")
+	{
+		if (A_Index <> 1)
+		{
+			LocList .= "|"
+			IList .= "|"
+		}
+		LocList .= Field1
+		IList .= Field3
+		
+	}
+	else
+	{
+		if (A_Index <> 1)
+			NoSNIList .= "|"
+		NoSNIList .= Field3
+		
+	}
+	
+	
+	;Add Current Row to Full Inventory
+	Gui, ListView,Inventory
+	LV_Add("",Field1,Field2,Field3,Field4,Field5,Field6,Field7,Field8,Field9)
+	
+	;If Status is "On-Hand", builds On-Hand Inventory
+	if (Field9 = "On-Hand" and Issuing <> "YES")
+	{
+		Gui, ListView, OHInventory
+		LV_Add("",Field3,Field1,Field2,Field4,Field5,,Field6)
+	}
+	
 }
-Loop 8
+
+Loop 9
 {
   Gui, ListView, Inventory
   LV_ModifyCol(A_Index,"AutoHdr")
   Gui, ListView, OHInventory
   LV_ModifyCol(A_Index,"AutoHdr")
-  Gui, ListView, TIInventory
-  LV_ModifyCol(A_Index,"AutoHdr")
 }
-gosub, FReset
 
+loop, parse, BLists, |
+	Sort, %A_Loopfield%, D| U
+	
+StringReplace, IList, IList, Issuable Location,,All
+StringReplace, IList, IList, ||, |,All
+
+  
+LV := "Inventory"
+if (MAList = "|")
+	gosub, hideMAC
+else
+	gosub, showMAC
+	
 Gui, ListView, OHInventory
 LV_ModifyCol(3,"SortLogical")
 LV_ModifyCol(1,"SortLogical")
-;~ StringReplace, IListC, IList, `,, ~, ALL
-;~ StringReplace, IListC, IListC, |, `,, ALL
-IfNotInString, IList, VoIP
-{
-  Gui, ListView, Inventory
-  LV_ModifyCol(7,0)
-  Gui, ListView, OHInventory
-  LV_ModifyCol(8,0)
-  Gui, ListView, TIInventory
-  LV_ModifyCol(7,0)
-  GuiControl, Hide, ExpMAC
-}
-else
-  GuiControl, Show, ExpMAC
-Gui, ListView, ScanGUIAdd
-if(voipyn = "Y")
-  LV_ModifyCol(8,"AutoHdr")
-else
-  LV_ModifyCol(8,0)
-LV_ModifyCol(9,0)
-LV_ModifyCol(10,0)
 
-Gui, ListView, OHInventory
-LV_ModifyCol(1,"Sort")
+/*
+GuiControl,, loc, |Select or Type Here|%LocList%
+;~ msgbox, %IList%
+GuiControl,, itmhwnd, |
+GuiControl,, itmhwnd, Select or Type Here|%IList%
+*/
 
-;~ StringSplit, Top, Top, `,
-;~ StringSplit, FLists, FLists, `|
-;~ Loop, Parse, Filters, |
-;~ {
-  ;~ tp := "Top" . A_Index
-  ;~ First := %tp%
-  
-  ;~ tp := "FLists" . A_Index
-  ;~ FList := %tp%
-  
-  ;~ GuiControl, , %A_Loopfield%, % "|" . First . "|" . %FList%
-  ;~ GuiControl, Choose, %A_Loopfield%, 1
-;~ }
-;~ GoSub, BuildSetFilters
+gosub, FReset
+FInv = ""
 SplashTextOff
-Inv := ""
 Return
 }
+
+
+hideMAC:
+Gui, ListView, Inventory
+LV_ModifyCol(7,0)
+GuiControl, Hide, ExpMAC
+Return
+
+showMAC:
+Gui, ListView, Inventory
+LV_ModifyCol(7,"AutoHdr")
+GuiControl, Show, ExpMAC
+Return
 
 
 Full2062:
@@ -2619,7 +2569,7 @@ if(Ttl = 0 or Ttl = "")
 }
 
 TISerials=
-
+GuiControl,,Scanned, |Serials Scanned:
 SplashTextOff
 return
 
@@ -2657,7 +2607,7 @@ Return
 
 
 
-
+/*
 BuildLVInventory:
 {
 LocList=
@@ -2737,7 +2687,7 @@ Loop 8
 
 Return
 }
-
+*/
 
 ^!a::
 {
@@ -3225,7 +3175,7 @@ Gui, EditMulti: Destroy
 Gui, 1: -Disabled
 Gui, 1: Default
 ;~ Gui, 1: +owner1
-WinActivate, ahk_class AutoHotkeyGUI
+WinActivate, Ahk_ID %Gui1HWND%
 Return
 
 

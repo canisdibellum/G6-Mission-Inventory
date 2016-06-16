@@ -1,7 +1,7 @@
 # G6-Mission-Inventory
 Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF Reader and Excel  
     
-# Version: 1.4.1.0  
+# Version: 2.0.1.0  
     
 ## Version Breakdown:  
     [Major UI or functionality change] . [Feature-Add] . [Feature-Fix/Bug-Fix] . [Code Cleanup]  
@@ -48,29 +48,62 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
  [?] Not Sure, test  
  X Not Going to do, see [Note] at end  
   [>] in progress  
+
+##PRIORITY: (To restore usable functionality)
+	 - [ ] Rework CustomerSelect DDL to fill TIInventory Independently of Full Inventory (use filters technique)  
+		- [ ] Make sure it hides the MAC Column if empty  
+	 - [ ] Move CustomerSelect DDL down and add text above "Select Customer"  
+		- [ ] Handle all instances of Script looking for "Select Customer" as selection  
+	 - [ ] Add "Set Label" to Context list for ScanGUIAdd  
+		- [ ] Use InputBox, populate with current label  
+	 - [ ] Bugfixes  
     
-    
-## BugFixes: (Something acts like it isn't supposed to)  
-	 - [ ] Bug: Scanning Registered Item number attempts to add Serial  
-		 - [ ] Make sure scanned data is analyzed in correct order  
-	 - [ ] Bug: Choose Customer DDL for Turn-In Broken  
-	 - [ ] Bug: ComboBoxes broken completely    
-	 - [ ] bug: not clearing scanned serials from turn-in    
-	 [?] bug: not storing StoredSerials [I think I fixed it]    
-	 [?] Bug: When you scan registered Number, it keeps the value onto the next scan [Can't Reproduce at home....attempt with scanner]  
-	 - [ ] bug: not looking at ScanGUI for most recent Label number  
-	 - [ ] bug: During Verify Issue, when remove 1st Serial, it leaves white space at top  
-    
+## Bug List: (Something acts like it isn't supposed to)  
+	Add to Inventory: (ScanGui)  
+	 - [ ] In prompt, blank Model if it says "Select Item First"  
+	 - [ ] Queue is not considered when looking for duplicate serials (SSList)  
+		- [ ] Make sure Undo and Clear boxes update the SSList  
+	 - [ ] Queue is not considered when looking for highest Label Number  
+	 - [ ] Some labels are still showing dashes!  
+	 - [?] "Add to Inventory" button might not be sorting "Inventory"  
+		- [ ] Possibly due to labelling issue  
+	 - [ ] Highest label number not being looked up at all  
+	 - [ ] Keeps trying to re-add IL scans instead of just setting the location  
+	 - [ ] Adding quantified items to queue does not update the comboboxes in the "Add Item Without Serial Number" GUI  
+	 - [ ] "Add IL" GUI Controls too short for contained text  
+	 - [ ] "Model" manual combobox doesn't populate  
+	 - [ ] Casing for "Item" needs to be handled
+ 	 - [ ] when Scan InputBox terminates, check for MAC, if none found make sure MAC Column is hidden   
+	
+	Inventory:  
+	 - [?] Doesn't seem to be sorting data  
+		- [ ] Again, possibly the Label dash issue  
+	 - [ ] "Export to Excel" not looking for MAC Addresses  
+	 - [ ] Still tries to generate Full 2062 when nothing issued  
+	 - [ ] BuildInventory needs to LV_Delete OHInventory before adding  
+ 	 - [ ] bug: Single-Cell Edits for bottom 2 Rows are wonky  
+	 - [ ] Figure out how to auto-size filter DDL's to fit contents    
+	
+	On-Hand Inventory:  
+	 - [ ] When IL is checked, previously checked items in that location have QTY set to 0  
+	 - [ ] Issue Splashscreen delayed, make come up faster  
+	 - [?] Again, possible sorting issue  
+	 - [ ] Issue Excel export doesn't include MAC Addresses  
+		Verify Issue:  
+		 - [ ] when remove 1st Serial, it leaves white space at top  
+		 - [ ] Needs sounds to indicate good scan  
+		 - [ ] Needs to handle scanning same serial twice  
+		 - [ ] Needs to handle scanning IL tag as serial  
+		 - [ ] When all clear some sort of message would be satisfying  
+	 
+	Turn-In Inventory:   
+	 - [ ] Couldn't test, TIInventory doesn't populate yet (ComboBox was fine though)  
+
 ## Feature Fix: (Something works but it's kluge-y, I can implement better, or is missing certain functionality [ex. doesn't handle Zero or Negative Input])  
-	 - [ ] Re-Do Build Inventory, use StringSplit.....make sure Quantified Items (if Serial is blank), don't get added to CBIList  
-	 - [ ] Don't add Quantified Items to Item ComboBox!  
 	 - [ ] Clarify Error Message Buttons on ScanGui Serial Error  
-	 - [ ] Handle scanning "IL-" codes in Verify Issue  
-	 [?] Location/Model on scangui not updating [Seems to be working fine now]  
-	 - [ ] Make Undo and Clear boxes refresh the SSList  
 	 - [ ] Make sure Menu hides if not on Tab 1 and shows if on Tab 1  
-	 [/] Make anything that triggers Filtration run FReset First, then [Guicontrol, text] the appropriate filter with the appropriate value then gosub, Filtration  
-	 - [ ] Figure out how to auto-size filter DDL's to fit contents  
+	 - [/] Make anything that triggers Filtration run FReset First, then [Guicontrol, text] the appropriate filter with the appropriate value then gosub, Filtration  
+	 - [ ] Find and fix all instances where main gui isn't activated when a 2nd GUI window closes    
     
 ## Feature-Add:  
 	 - [ ] make ComboBoxes instead be drop-downs with [Add...] option at bottom of list so they have to look through the list before typing something in.  
@@ -79,14 +112,14 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	     - [ ] Check other gui styles, see if button color change possible  
 	         - [ ] See if WinX style gui available  
 	 - [ ] Look into ifexist C:\Program Files\Microsoft Office 15\root\office15\excel.exe (or detect version and if >2010), don't delete Sheets 2 & 3  
-	 - [ ] When scanning in Add to Inventory ScanGUI (and possibly Turn-In) make Splashtext with autochange (item labels [i-<>-<>]) and small tips and tricks (ex. type "undo" to undo and "clear" to clear  
+	 - [ ] When scanning in Add to Inventory ScanGUI (and possibly Turn-In) make Splashtext with autochange (item labels [i-<>-<>]) and small tips and tricks (ex. type "undo" to undo and "clear" to clear)  
 	     - [ ] make typing "Undo" and "Clear" execute those functions  
-	 - [>] Edit Individual cells 
-	     - [>] Made Gui, made it popup....get better positioning...find col width, find upper left corner of cell    
 	 - [ ] Run reports Menu Item....Pop up Msg Box with all stats and option to export to text file.
+	 - [ ] Make "Set Special Status" Menu Item for Full Inventory   
+		- [ ] for things like "Dead-Line" or "In Use"   
     
 ## General To Do:  
-	 [/] Test all controls make sure everything is Nominal [ScanGUI seems to be fine after private testing, real testing commences tomorrow]  
+	 - [/] Test all controls make sure everything is Nominal [ScanGUI seems to be fine after private testing, real testing commences tomorrow]  
 	 - [ ] Make sure all Inputs handle blank, 0, and Negative Entries  
 	 - [ ] Clear Out old crap and set HRNum to 0  
 	 - [ ] Write Up Documentation, to include commenting, especially Functions  
@@ -98,6 +131,23 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 ______________________________________________________________________________  
     
 # Done: 
+    ----------------------2.0.1.0----------------------   
+	 Major Functionality Change:   
+	 - [x] Re-Do Build Inventory, use StringSplit.....make sure Quantified Items (if Serial is blank), don't get added to CBIList [2.0.1.0]  
+	 BugFixes/FeatureFixes:   
+	 - [x] Bug: Scanning Registered Item number attempts to add Serial  
+		 - [x] Make sure scanned data is analyzed in correct order  
+	 - [x] Bug: Choose Customer DDL for Turn-In Broken  
+	 - [x] Bug: ComboBoxes broken completely    
+	 - [x] bug: not storing StoredSerials [I think I fixed it]    
+	 - [x] Bug: When you scan registered Number, it keeps the value onto the next scan [Can't Reproduce at home....attempt with scanner]  
+	 - [x] Location/Model on scangui not updating [Seems to be working fine now]  
+	 - [x] Don't add Quantified Items to Item ComboBox!  
+	 - [x] Fix: ScanGUIAdd Functionality completely broken  
+    ----------------------1.4.2.0----------------------   
+	 - [x] bug: not clearing scanned serials from turn-in [1.4.2.0] 
+	 - [x] Edit Individual cells [1.4.2.0] 
+	     - [x] Made Gui, made it popup....get better positioning...find col width, find upper left corner of cell [1.4.2.0]    
     ----------------------1.3.1.0----------------------   
 	 - [x] When issuing, If user checks IL, check all items in location [1.3.1.0]	 
 	    - [x] RowNumber := 0, RowNumber := Search(RowNumber...) Search for location and check[1.3.1.0]    
