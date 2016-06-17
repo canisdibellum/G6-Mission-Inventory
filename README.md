@@ -49,29 +49,41 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
   X  Not Going to do, see [Note] at end  
  [>] in progress  
 
-##PRIORITY: (To restore usable functionality)
+##PRIORITY: (To be done ASAP)
+	 - [ ] parse through ideas file from OneCloud, add in to To-Do lists as appropriate
+	 - [ ] Make sure everything important made it to this Priority List
+	 - [ ] Fix Major AInventory (Add to Inventory) Issues:
+	 - [ ] Fix Major AInventory (Add to Inventory) Issues:
+		 - [ ] Some labels are still showing dashes!  
+		 - [ ] Fix label Auto-Numbering  
+		 - [ ] Queue is not considered when looking for duplicate serials (SSList) [Add to as part of scan procedure?]  
+			- [ ] build ScanCheck Lists: (Serials, Items, Locations) 
+				- [ ] Build list of all Serials, Items, and Locations in Inventory when BuildInventory run [I think it already does] 
+				- [ ] As soon as scan button is hit, Build Serial, Item, and Location lists from Current Queue [use or update and then use already existing functions to facilitate 
+				- [ ] append them to already existing lists,   
+				- [ ] look into building lists as arrays and what happens when you try to retrieve the key for a value that doesn't exist,   (checking array for dups: https://autohotkey.com/board/topic/68613-add-variables-to-array-and-check-for-duplicates/)
+				- [ ] When scanning, add to lists  
+				- [ ] When exiting scan routine, sort, U Location and Item Lists, and update comboboxes  
+		 - [ ] Queue is not considered when looking for highest Label Number  
+		 - [ ] Keeps trying to re-add IL scans instead of just setting the location  
+		 - [ ] Adding quantified items to queue does not update the comboboxes in the "Add Item Without Serial Number" GUI  
+
+	 - [ ] Determine which items need to be researched  
+	 - [ ] Anything else that does not need to be researched  
 	 - [ ] Bugfixes  
+	 - [ ] Feature Fixes  
+	 - [ ] Make 100% Stable 
+	 - [ ] Add Features
     
 ## Bug List: (Something acts like it isn't supposed to)  
 	Add to Inventory: (ScanGui)  
 	 - [ ] In prompt, blank Model if it says "Select Item First"  
-	 - [ ] Queue is not considered when looking for duplicate serials (SSList)  
-		- [ ] Make sure Undo and Clear boxes update the SSList  
-	 - [ ] Queue is not considered when looking for highest Label Number  
-	 - [ ] Some labels are still showing dashes!  
-	 - [?] "Add to Inventory" button might not be sorting "Inventory"  
-		- [ ] Possibly due to labelling issue  
-	 - [ ] Highest label number not being looked up at all  
-	 - [ ] Keeps trying to re-add IL scans instead of just setting the location  
-	 - [ ] Adding quantified items to queue does not update the comboboxes in the "Add Item Without Serial Number" GUI  
 	 - [ ] "Add IL" GUI Controls too short for contained text  
 	 - [ ] "Model" manual combobox doesn't populate  
 	 - [ ] Casing for "Item" needs to be handled
  	 - [ ] when Scan InputBox terminates, check for MAC, if none found make sure MAC Column is hidden   
 	
 	Inventory:  
-	 - [?] Doesn't seem to be sorting data  
-		- [ ] Again, possibly the Label dash issue  
 	 - [ ] "Export to Excel" not looking for MAC Addresses  
 	 - [ ] Still tries to generate Full 2062 when nothing issued  
 	 - [ ] BuildInventory needs to LV_Delete OHInventory before adding  
@@ -84,7 +96,6 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	On-Hand Inventory:  
 	 - [ ] When IL is checked, previously checked items in that location have QTY set to 0  
 	 - [ ] Issue Splashscreen delayed, make come up faster  
-	 - [?] Again, possible sorting issue  
 	 - [ ] Issue Excel export doesn't include MAC Addresses  
 		Verify Issue:  
 		 - [ ] when remove 1st Serial, it leaves white space at top  
