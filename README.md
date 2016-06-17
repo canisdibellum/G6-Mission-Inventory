@@ -1,7 +1,7 @@
 # G6-Mission-Inventory
 Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF Reader and Excel  
     
-# Version: 2.0.1.0  
+# Version: 2.1.1.0  
     
 ## Version Breakdown:  
     [Major UI or functionality change] . [Feature-Add] . [Feature-Fix/Bug-Fix] . [Code Cleanup]  
@@ -46,16 +46,10 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
  [/] Started  
  - [x] Done  
  [?] Not Sure, test  
- X Not Going to do, see [Note] at end  
-  [>] in progress  
+  X  Not Going to do, see [Note] at end  
+ [>] in progress  
 
 ##PRIORITY: (To restore usable functionality)
-	 - [ ] Rework CustomerSelect DDL to fill TIInventory Independently of Full Inventory (use filters technique)  
-		- [ ] Make sure it hides the MAC Column if empty  
-	 - [ ] Move CustomerSelect DDL down and add text above "Select Customer"  
-		- [ ] Handle all instances of Script looking for "Select Customer" as selection  
-	 - [ ] Add "Set Label" to Context list for ScanGUIAdd  
-		- [ ] Use InputBox, populate with current label  
 	 - [ ] Bugfixes  
     
 ## Bug List: (Something acts like it isn't supposed to)  
@@ -83,6 +77,9 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	 - [ ] BuildInventory needs to LV_Delete OHInventory before adding  
  	 - [ ] bug: Single-Cell Edits for bottom 2 Rows are wonky  
 	 - [ ] Figure out how to auto-size filter DDL's to fit contents    
+	 - [ ] Make Changes needs full inventory before enabling changes    
+		- [ ] See if that means FReset & BuildInventory or one or the other    
+	 - [ ] Edit multiple needs to runthrough and autohdr whatever columns got changed  
 	
 	On-Hand Inventory:  
 	 - [ ] When IL is checked, previously checked items in that location have QTY set to 0  
@@ -91,19 +88,22 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	 - [ ] Issue Excel export doesn't include MAC Addresses  
 		Verify Issue:  
 		 - [ ] when remove 1st Serial, it leaves white space at top  
-		 - [ ] Needs sounds to indicate good scan  
 		 - [ ] Needs to handle scanning same serial twice  
 		 - [ ] Needs to handle scanning IL tag as serial  
 		 - [ ] When all clear some sort of message would be satisfying  
-	 
+		 - [ ] Put listbox like TIInventory that lists already scanned items  
+
 	Turn-In Inventory:   
-	 - [ ] Couldn't test, TIInventory doesn't populate yet (ComboBox was fine though)  
+		 - [ ] Reset # of scanned Items label  
+	 
 
 ## Feature Fix: (Something works but it's kluge-y, I can implement better, or is missing certain functionality [ex. doesn't handle Zero or Negative Input])  
 	 - [ ] Clarify Error Message Buttons on ScanGui Serial Error  
 	 - [ ] Make sure Menu hides if not on Tab 1 and shows if on Tab 1  
 	 - [/] Make anything that triggers Filtration run FReset First, then [Guicontrol, text] the appropriate filter with the appropriate value then gosub, Filtration  
 	 - [ ] Find and fix all instances where main gui isn't activated when a 2nd GUI window closes    
+	 - [ ] Get Rid of Blank space at the top of CustomerSelect DDL  
+	 - [ ] Get Rid all R and H options on DDLs and ComboBoxes (don't forget to check Functions.ahk)  
     
 ## Feature-Add:  
 	 - [ ] make ComboBoxes instead be drop-downs with [Add...] option at bottom of list so they have to look through the list before typing something in.  
@@ -115,22 +115,47 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	 - [ ] When scanning in Add to Inventory ScanGUI (and possibly Turn-In) make Splashtext with autochange (item labels [i-<>-<>]) and small tips and tricks (ex. type "undo" to undo and "clear" to clear)  
 	     - [ ] make typing "Undo" and "Clear" execute those functions  
 	 - [ ] Run reports Menu Item....Pop up Msg Box with all stats and option to export to text file.
-	 - [ ] Make "Set Special Status" Menu Item for Full Inventory   
-		- [ ] for things like "Dead-Line" or "In Use"   
+	 - [ ] Make "Set Special Status" Menu Item for Full Inventory [Currently possible with edit multitiple]  
+		- [ ] for things like "Deadline" or "In Use"   
+	 - [ ] Add "Duplicate Row" to MakeChanges Context Menu  
+	 - [ ] Add ability to Copy Cell to OHInventory   
     
 ## General To Do:  
-	 - [/] Test all controls make sure everything is Nominal [ScanGUI seems to be fine after private testing, real testing commences tomorrow]  
+	 - [ ] Test all controls make sure everything is Nominal
 	 - [ ] Make sure all Inputs handle blank, 0, and Negative Entries  
-	 - [ ] Clear Out old crap and set HRNum to 0  
+	 - [ ] Clear Out old stuff and set HRNum to 0  
 	 - [ ] Write Up Documentation, to include commenting, especially Functions  
 	 - [ ] Continue planning and then implement Menus  
 	 - [ ] Comb for unused/old Variables and Subroutines  
+	 - [?] During make changes if you have something selected and then search for something, it adds found row to selection...can't decide if thats a bug or a feature  
    
     
    
 ______________________________________________________________________________  
     
 # Done: 
+    ----------------------2.1.1.0----------------------  
+	Priority:	
+	 - [x] Rework CustomerSelect DDL to fill TIInventory Independently of Full Inventory  
+		- [x] Make sure MAC Column doesn't show if empty  
+	 - [x] Move CustomerSelect DDL down and add text above "Choose Customer"  
+		- [x] Handle all instances of Script looking for "Choose Customer" as selection  
+	 - [x] Move Scanned Serials ListBox down and add text above "Serials Scanned"  
+		- [x] Handle all instances of Script looking for "Serials Scanned" as selection  
+	 - [x] QI Turn-in needs to run BuildInventory (and possibly FReset) before making changes!!  (wiped out my inventory because I had a filter set)  
+	On-Hand Inventory:  
+	 - [x] OHInventory was duplicating if it showed last item in csv  
+		Verify Issue:  
+		 - [x] Needs sounds to indicate good scan  
+	Turn-In Inventory:   
+	 - [x] Make CustomerSelect disable Controls first
+	 - [x] at the end have TINonSN store ScannedSerials in OldScanned then
+	 - [x] run customerselect 
+		 - [x] GuiControl, , Scanned, |%OldScanned%
+		 - [x] if OldScanned = ""; Don't Repopulate Check Marks
+		 - [x] Repopulate Check Marks:
+	 - [x] For Turning-In Quantified items: instead of running through the csv twice and then looking up each qty before building gui to turn in, store qty in array while building TIInventory then just call the value for the gui   
+	 - [x] TI Quantified Items doesn't remove them from the listview  
     ----------------------2.0.1.0----------------------   
 	 Major Functionality Change:   
 	 - [x] Re-Do Build Inventory, use StringSplit.....make sure Quantified Items (if Serial is blank), don't get added to CBIList [2.0.1.0]  
@@ -144,6 +169,7 @@ ______________________________________________________________________________
 	 - [x] Location/Model on scangui not updating [Seems to be working fine now]  
 	 - [x] Don't add Quantified Items to Item ComboBox!  
 	 - [x] Fix: ScanGUIAdd Functionality completely broken  
+	 - [x] Test all controls make sure everything is Nominal
     ----------------------1.4.2.0----------------------   
 	 - [x] bug: not clearing scanned serials from turn-in [1.4.2.0] 
 	 - [x] Edit Individual cells [1.4.2.0] 

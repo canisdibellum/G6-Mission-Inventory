@@ -1,4 +1,4 @@
-Version := "2.0.1.0"
+Version := "2.1.1.0"
 Menu, tray, Icon , %A_ScriptDir%\Images\01.ico, 1, 1
 SetWorkingDir, %A_ScriptDir%
 #SingleInstance, Force
@@ -105,17 +105,17 @@ GVColsF := "1|2|3|4|5|6|7|8|9"
 GVColsOH := "1|2|3|4|5|6|7|8"
 GVColsTI := "1|2|3|4|5|6|7"
 
-Firstus=
-(
-Filter Location|
-Filter Label Set|
-Filter Item|
-Filter Model|
-Filter Issued To|
-FilterStatus|
-)
+;~ Firstus=
+;~ (
+;~ Filter Location|
+;~ Filter Label Set|
+;~ Filter Item|
+;~ Filter Model|
+;~ Filter Issued To|
+;~ FilterStatus|
+;~ )
 
-Top := "Filter Location|,Filter Label Set|,Filter Item|,Filter Model|,Filter Issued To|,FilterStatus|"
+;~ Top := "Filter Location|,Filter Label Set|,Filter Item|,Filter Model|,Filter Issued To|,FilterStatus|"
 
 
 ;~ sort, LocList, U D|
@@ -243,19 +243,23 @@ Gui, Tab, Turn-In,,Exact
 Gui, Add, Listview, grid x180 y11 h515 w610 ReadOnly checked vTIInventory Sort , Serial|Location|Label|Item|Model|QTY|MAC Address
 ;~ Gui, Add, Listview, grid x180 y51 h465 w610 vInventory,Location|Label|Item|Model|QTY|Serial|MAC Address|Issued To
 ;~ gosub, BuildInventory
-Gui, Add, DropDownList,  x20 y20 R5 w150 gCustomerSelect vCustomerSelect, Choose Customer|%ITList%
-Gui, Add, Button,  x20 y+10 h40 w150 vTIScan gTIScan, Scan
+Gui, Add, Text,  x20 y20 w150 , Choose Customer:
+Gui, Add, DropDownList,  x20 y+5 R5 w150 gCustomerSelect vCustomerSelect, %ITList%
+;~ Gui, Add, DropDownList,  x20 y20 R5 w150 gCustomerSelect vCustomerSelect, Choose Customer|%ITList%
+Gui, Add, Button,  x20 y+12 h60 w150 vTIScan gTIScan, Scan
 Gui, Add, Button,  x20 y+10 h50 w150 vTINonSN gTINonSNGui, Turn-In Non-Serialized Items
-Gui, Add, ListBox, x20 y+10 w150 ReadOnly R12 vScanned, Serials Scanned:
+;~ Gui, Add, ListBox, x20 y+10 w150 ReadOnly R12 vScanned, Serials Scanned:
+Gui, Add, Text, x20 y+10 w150 , Serials Scanned:
+Gui, Add, ListBox, x20 y+5 w150 ReadOnly R10 vScanned,
 Gui, Add, Button,  x20 y+10 h40 w150 vTIClear gTIClear, Clear Entries
-Gui, Add, Button,  x20 y+10 h40 w150 vTIApply gTIApply, Turn-In
+Gui, Add, Button,  x20 y+10 h60 w150 vTIApply gTIApply, Turn-In
 Gui, Add, Text, x20 y+10 w150 vTIRunning, Serialized Items to Turn-In: %TIItems%
 GuiControl, Disable, TIScan
 GuiControl, Disable, TIApply
 GuiControl, Disable, TINonSN
 GuiControl, Disable, TIInventory     ;RE-ENABLE!!!!
 GuiControl, Disable, TIClear
-GuiControl, Choose, CustomerSelect, 1
+;~ GuiControl, Choose, CustomerSelect, 1
 }
 gosub, BuildInventory
 
@@ -480,25 +484,105 @@ Return
 
 
 CustomerSelect:
+ScannedSerials := ""
+GuiControl, Disable, TIScan
+GuiControl, Disable, TIApply
+GuiControl, Disable, TINonSN
+GuiControl, Disable, TIInventory     ;REMOVE When removing "a" customer functionality! 
+GuiControl, Disable, TIClear
 GuiControlGet, CustomerSelect
 Gui, ListView, TIInventory
 LV_Delete()
-GuiControl, Text, SelectedI, |
-if (CustomerSelect = "Choose Customer")
+LV_ModifyCol(7,0)
+
+GuiControl, ,Scanned, |
+if (CustomerSelect = "")
 {
-  GuiControl, Disable, TIScan
-  GuiControl, Disable, TIApply
-  GuiControl, Disable, TINonSN
-  GuiControl, Disable, TIClear
+  loop, 6
+    LV_ModifyCol(A_Index, "AutoHdr")
   Return
 }
-gosub, BuildInventory
-LV_ModifyCol(3,"Sort")
+;~ Gui, Listview, TIInventory
+;~ gosub, BuildTIInventory
 
-if (CustomerSelect = "a")
-  GuiControl, Enable, TIInventory
+;~ BuildTIInventory:
+Gui, Listview, TIInventory
+FileRead, FInv, %csvF%
+StringReplace, FInv, FInv, `,, \, All
+StringReplace, FInv, FInv, ~, `,, All
+sort, FInv, \
+CustSNList := "", TINOSNList := "", MACShow := "NO", q := {}
+Loop, parse, FInv, `n, `r
+{
+  if (A_Loopfield = "")
+    Break
+	StringSplit, Field, A_Loopfield, \
+	/*
+	Field1 = Location
+	Field2 = Label
+	Field3 = Item
+	Field4 = Model
+	Field5 = Qty
+	Field6 = Serial
+	Field7 = MAC Address
+	Field8 = Issued To
+	Field9 = Status
+	*/
+	
+	;if it sees a MAC Address sets variable to "YES"
+  ;at the end if this variable says "YES" then it will show the MAC column
+	if (Field7 <> "")
+		MACShow = "YES"
+	
+	
+	; Do the following if issued to this customer:
+	if (Field8 = CustomerSelect)
+	{
+		;Build list of SerialNumbers (CustSNList) and Quantified Items (TINOSNList)
+		if(Field6 <> "")
+			CustSNList .= "|" . Field6 . "|"
+		else
+		{
+			if (TINOSNList <> "")
+				TINOSNList .= "|"
+			TINOSNList .= Field4
+			;Store Qty's in q
+			NewKey := RegExReplace(Field4, "\W", "_")
+			q[NewKey] := Field5
+		}
+	
+		;Add Current Row to TIInventory
+		LV_Add("",Field6,Field1,Field2,Field3,Field4,Field5,Field7)
+	}
+}
+
+Loop 6
+  LV_ModifyCol(A_Index,"AutoHdr")
+
+
+if (MACShow = "YES")
+  LV_ModifyCol(7,"AutoHdr")
+
+LV_ModifyCol(3,"SortLogical")
+
+Ttl := LV_GetCount()
+
+if (Ttl = 0)
+{
+  gosub, BuildInventory
+  GuiControl, , CustomerSelect, |%ITList%
+  gosub, CustomerSelect
+  Return
+}
+
+if (CustomerSelect = "a")                   ;For Testing....remove from final!
+  GuiControl, Enable, TIInventory           ;For Testing....remove from final!
+
+
 GuiControl, Enable, TIScan
 GuiControl, Enable, TIApply
+/*
+Not Needed because the build process now builds TINOSNList
 TINOSNList := ""
 FileRead, Inv, %csvF%
 Loop, Parse, Inv, `n, `r
@@ -514,9 +598,11 @@ Loop, Parse, Inv, `n, `r
 }
 StringTrimLeft, TINOSNList, TINOSNList, 1
 StringReplace, TINOSNList, TINOSNList, `~, `,, All
+*/
 If(TINOSNList <> "")
   GuiControl, Enable, TINonSN
 GuiControl, Enable, TIClear
+SplashTextOff
 Return
 
 
@@ -956,13 +1042,15 @@ gosub, Export
 ;~ gosub, GenerateXML         ;RE-ENABLE FOR XML
 ;~ IssuePDF(CustGrid, From, To)
 IssuePDF(MasterIssueList, FromName, IssueTo)
+Issuing := "NO"
 gosub, ApplyChanges
 gosub, BuildInventory
 GuiControl,,SelectedI, |Selected:|
-GuiControl,,CustomerSelect,|Choose Customer|%ITList%
+GuiControl,,CustomerSelect, |%ITList%
 GuiControl, Choose, CustomerSelect, 1
 gosub, CustomerSelect
 SplashTextOff
+
 MsgBox, 131072, Done, You can now resume normal operation.
 Return
 
@@ -1410,12 +1498,12 @@ gosub, CalculateWandX
 
 XPos := WinX + totalW + 179 + 10
 
-ThisRow += 1
+Row += 1
 
 VarSetCapacity(_RECT,16)
 _RECT:="left,top,right,bottom"
 RC := new _Struct(_RECT)                      ;create structure
-SendMessage, 0x100e, %ThisRow%, RC[], SysListView322, ahk_id %Gui1HWND%
+SendMessage, 0x100e, %Row%, RC[], SysListView322, ahk_id %Gui1HWND%
 YPos := WinY + rc.top + 71 + 11
 HPos := rc.bottom - rc.top
 
@@ -1494,20 +1582,20 @@ Return
 
 
 GuiContextMenu:
+Row := "", Row := "", Column := ""
 CoordMode, Mouse, Screen
 MouseGetPos, GuiX, GuiY 
-RowNumber := LV_GetNext("Focused")
+
+if(A_EventInfo = 0)
+  Return
+
+Row := A_EventInfo
+
 if(A_GuiControl = "Inventory")
 {
   Gui, 1: Default
   Gui, ListView, Inventory
-  CopiedCell=
-  Row=
-  Column=
-  Row := A_EventInfo
   Column := LV_SubItemHitTest(HLV1)
-  ThisRow := LV_GetNext("Focused")
-  ;~ MsgBox, %ThisRow%
 }
 
 if (editing = "N")
@@ -1520,9 +1608,8 @@ else if (editing = "Y")
   if(A_GuiControl <> "Inventory")
     Return
 }
-if(A_EventInfo = 0)
-  Return
-Row := A_EventInfo
+
+;~ Row := A_EventInfo
 
 if (editing = "Y")
 {
@@ -1674,6 +1761,13 @@ BuildInventory:
 {
 SplashTextOn, 400, 200, Please Wait, Please wait...`n`nHave some digital patience...
 Gui, 1: Default
+Gui, listview, Inventory
+LV_Delete()
+if (issuing <> "YES")
+{
+  Gui, listview, OHInventory
+  LV_Delete()
+}
 FileRead, FInv, %csvF%
 StringReplace, FInv, FInv, `,, \, All
 StringReplace, FInv, FInv, ~, `,, All
@@ -1682,6 +1776,8 @@ IList := "", LocList := "", MAList := "", ITList := "", NoSNIList := ""
 StringSplit, List, Lists, |
 Loop, parse, FInv, `n, `r
 {
+  if (A_Loopfield = "")
+    Break
 	StringSplit, Field, A_Loopfield, \
 	/*
 	Field1 = Location
@@ -1758,7 +1854,10 @@ if (MAList = "|")
 	gosub, hideMAC
 else
 	gosub, showMAC
-	
+
+Gui, ListView, TIInventory
+LV_ModifyCol(7,0)
+
 Gui, ListView, OHInventory
 LV_ModifyCol(3,"SortLogical")
 LV_ModifyCol(1,"SortLogical")
@@ -1780,6 +1879,7 @@ Return
 hideMAC:
 Gui, ListView, Inventory
 LV_ModifyCol(7,0)
+
 GuiControl, Hide, ExpMAC
 Return
 
@@ -2385,7 +2485,9 @@ Loop
       Break
   }
   LV_Modify(Row, "Vis Focus Select Check")
-  ScannedSerials .= SSerial . "|"
+  if (ScannedSerials <> "")
+    ScannedSerials .= "|"
+  ScannedSerials .= SSerial
   GuiControl,,Scanned, %SSerial%
   TIItems += 1
   GuiControl,,TIRunning, Serialized Items to Turn-In: %TIItems%
@@ -2400,20 +2502,21 @@ gui, font, s12
 Gui, Add, Text, x10 ,Choose Quantities to turn in: (Can Be 0)
 Loop, Parse, TINOSNList, |
 {
-  if (A_Loopfield = "")
-    Break
+  ;~ if (A_Loopfield = "")
+    ;~ Break
   Desc := A_Loopfield
   gui, font, Bold
   Gui, Add, Text, x10 y+20,%A_Loopfield%
   gui, font, Norm
   Gui, Add, Text, x10,Quantity to Turn-In:
   Gui, 1:Default
-  RowNumber := Search("0",Desc,"5","TIInventory")
+  ;~ RowNumber := Search("0",Desc,"5","TIInventory")
   Gui, ListView, TIInventory
-  LV_GetText(TIQTY, RowNumber, 6)
+  ;~ LV_GetText(TIQTY, RowNumber, 6)
   Gui, 6:Default
-  txt := RegExReplace(A_Loopfield, "\W", "_")
-  varname := txt . "Q"
+  Key := RegExReplace(A_Loopfield, "\W", "_")
+  varname := Key . "Q"
+  TIQTY := q[Key]
   Gui, Add, Edit, x+10 yp+0  w50 v%varname%, %TIQTY%
 }
 Gui, Add, Button, y+20 gTINonSN,Turn-In
@@ -2430,6 +2533,7 @@ Gui, 6:Default
 Gui, Submit
 FileRead, Inv, %csvF%
 Gui, 1:Default
+gosub, FReset
 Loop, Parse, TINOSNList, |
 {
   if not A_LoopField
@@ -2447,25 +2551,6 @@ Loop, Parse, TINOSNList, |
   RowNumber := Search("0",Desc,"5","TIInventory")
   Gui, ListView, TIInventory
   LV_GetText(TIItem, RowNumber, 4)
-
-  ;~ Loop, Parse, Inv, `n, `r
-  ;~ {
-    ;~ StringSplit, List, A_Loopfield, `,
-    ;~ MsgBox, CustSelect: %CustomerSelect% / TINOSNSelection: %TINOSNSelection%`nList8: %List8%  / List4: %List4%
-    ;~ if(List8 = CustomerSelect and List4 = TINOSNSelection)
-    ;~ {
-      ;~ TIItem := List3
-      ;~ Break
-    ;~ }
-    ;~ loop, 9
-    ;~ {
-      ;~ List := "List" . A_Index
-      ;~ %List% := ""
-    ;~ }
-  ;~ }
-  ;~ MsgBox, %CustomerSelect% / TINOSNSelection: %TINOSNSelection%
-  ;~ MsgBox, TIItem (SHOULD NOT BE BLANK): %TIItem%
-
   RowN := DblSearch(TIModel, "Model", "On-Hand", "Status", "Inventory", ColumnList)
   Gui, ListView, Inventory
   if (RowN = "")
@@ -2487,35 +2572,22 @@ Loop, Parse, TINOSNList, |
 gosub, ApplyChanges
 
 Gui, 6:Destroy
-TINOSNList := ""
-FileRead, Inv, %csvF%
-Loop, Parse, Inv, `n, `r
+
+CurrCustomer := CustomerSelect
+OldScanned := ScannedSerials
+gosub, BuildInventory
+GuiControl,,CustomerSelect, |%ITList%
+GuiControl, ChooseString, CustomerSelect, %CurrCustomer%
+gosub, CustomerSelect
+GuiControl, , Scanned, |%OldScanned%
+if (OldScanned <> "")
 {
-  StringSplit, List, A_Loopfield, `,
-  if(List8 = CustomerSelect and List6 = "")
-    TINOSNList .= "|" . List4
-  loop, 9
+  loop, parse, OldScanned, |
   {
-    List := "List" . A_Index
-    %List% := ""
-  }
+    RowNumber := Search("0", A_Loopfield, "1", "TIInventory")
+    LV_Modify(RowNumber, "+Check")
+  }	  
 }
-StringTrimLeft, TINOSNList, TINOSNList, 1
-StringReplace, TINOSNList, TINOSNList, `~, `,, All
-If(TINOSNList = "")
-  GuiControl, Disable, TINonSN
-Else If(TINOSNList <> "")
-  GuiControl, Enable, TINonSN
-Gui, ListView, TIInventory
-Ttl := LV_GetCount()
-if(Ttl = 0 or Ttl = "")
-{
-  gosub, BuildInventory
-  GuiControl,,CustomerSelect,|Choose Customer|%ITList%
-  GuiControl, Choose, CustomerSelect, 1
-  gosub, CustomerSelect
-}
-Inv :=
 Return
 
 
@@ -2562,14 +2634,14 @@ Gui, ListView, TIInventory
 Ttl := LV_GetCount()
 if(Ttl = 0 or Ttl = "")
 {
-  ;~ gosub, BuildInventory
-  GuiControl,,CustomerSelect,|Choose Customer|%ITList%
-  GuiControl, Choose, CustomerSelect, 1
+  gosub, BuildInventory
+  GuiControl,,CustomerSelect,|%ITList%
+  ;~ GuiControl, Choose, CustomerSelect, 1
   gosub, CustomerSelect
 }
 
 TISerials=
-GuiControl,,Scanned, |Serials Scanned:
+GuiControl,,Scanned, |
 SplashTextOff
 return
 
@@ -2583,7 +2655,7 @@ GuiControl, Disable, TIScan
 GuiControl, Disable, TIApply
 GuiControl, Disable, TINonSN
 GuiControl, Disable, TIClear
-GuiControl,,Scanned, |Serials Scanned:
+GuiControl,,Scanned, |
 Return
 
 
@@ -3087,6 +3159,7 @@ StringReplace, VSerials, VSerials, %VScan%,,All
 StringReplace, VSerials, VSerials, ||, |,All
 
 GuiControl, Text, VerifySerials, |%VSerials%
+SoundPlay, %A_ScriptDir%\Sounds\Success.wav
 ControlFocus, VScan
 GuiControl, Text, VScan,
 Return
@@ -3197,4 +3270,10 @@ Loop
 Sort, Rows2Delete, D| N R
 Loop, parse, Rows2Delete, |
   LV_Delete(A_Loopfield)
+Return
+
+SetLabel:
+
+
+
 Return
