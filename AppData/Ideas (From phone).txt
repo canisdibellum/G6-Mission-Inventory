@@ -61,19 +61,43 @@
 	 [ ]  - When it returns to previous subroutine, set header to whatever you're doing and then release the handle (make issue exports set the header to HR# - Customer)  
    
 	 [ ] Verify that Field0 in stringsplit contains qty of fields  
-
+    
+    * Store amount of digits in label number and hand receipt in ini
+    * Pop up at first run to set digit amounts, fill with defaults 2 and 5, have as GUI with updating example (i.e. they enter "3" and display shows: Preview: disablededit[001] 
+    * Preferences:
+        - [ ] Delete old Archives
+            {disabled}Archive file limit: [Value in ini]
+        - Label Digits
+	* Make updating listbox into sub with -redraw at beginning and +redraw at end
+	* Put Order Number at top of ListView instead of "Selected:"
 	- In Full Inventory, hide empty Columns and Hide QTY if no QI
-	- Make "Refresh Inventory" option?
-	- Add "Orders" Menu, Verify|Re-Issue|Re-generate Hand Receipt|
-	- Add "Hide Column" to all Grid Context Menus (Add "Show Hidden Columns..." if run)
-		- To Show: popup gui with checkboxes unchecked (like the initial Export gui), 
+	? Make "Refresh Inventory" option?
+	- Add "Customers" Menu, Generate MAC List|Export List of Customer-Issued Items to Excel...|Generate Complete Hand Receipt for Customer
+	- Add "Orders" Menu, Verify|Re-Issue|Re-generate Hand Receipt for Order
+	- Add "Hide Column" to all Grid Context Menus (add "Show Hidden Columns..." in "Hide Column" Subroutine)
+		- To Show: popup gui with checkboxes unchecked (like the normal Export gui),
+	- Add leading Zero to label (can also be used for Order Numbers): SubStr("0" . A_Index,-1,2)
 	- Make LabelAdvance() a function
 	- store labels in ini as follows:
 		 	[Labels]
 			<Customer>=<HighestNumber>
 	- if any edits made to Label, update ini (don't change Highest if not Highest!)
 	- make EditCell recognize Label column and display edit gui that breaks up over as: edt[LabelName]-edt[LabelNumber]
+	    -   Detect if label already exists? Maybe prompt: 
+	                                            -|"Label Number already exists:"
+	                                             |"(Cancel will revert change you just made)"
+	                                             |   o Try Again
+	                                             |   o Change Duplicate
+	                                             |   o Automatically adjust all label numbers, %LabelNumber% and higher, for %LabelName% by one (1)
+	                                             |   btn[OK]     btn[Cancel]
+	    -   Detect if label name already exists? Maybe yesno msgbox,"%LabelName% Doesn't exist yet in this inventory,`nSet Label Number to 01? 
+	                                             
 	- Msg on bottom saying if label# left blank "-" will be removed
+	- Change HR Number field to say Order#:00000
+	- you can store numbers with leading zeros in ini, but they will lose the zeros when incremented normally (i.e. x += 1)
+	    - increment numbers with leading zeros: var := SubStr("[zeros]" . var + 1, -1, [digitcount])
+	        - zeros (formatted "00", "000", "0000" and so on) can be as many as you want
+	        - digitcount contains how many you want the total number to be 
 	
 Excel Settings:
 	- Set Excel Page Set
@@ -85,8 +109,6 @@ Excel Settings:
 
 Add Re-Issue Feature
 	* Make Cancel Button for re-issue
-	* Make updating listbox into sub with -redraw at beginning and +redraw at end<<<<<<<<<<<<<<<<<<----------DO THIS NORMALLY
-	* Put Order Number at top of ListView<<<<<<<<<<<<<<<<<<----------DO THIS NORMALLY instead of "Selected:"
 	- prompt for order number
 	- Run BuildInventory (do NOT run it again until end)
 	- Lock to OHI
@@ -99,4 +121,19 @@ Add Re-Issue Feature
 	- Still prompt for To and From
 	- carry on same as Issue, but don't Retrieve OrderNumber from ini and don't change OrderNumber in ini when complete
 	- Change StoredSerials for Order Number
- 
+
+To delete extra sheets from Excel Export:
+[CODE]
+Count := Xl.Worksheets().Count
+if (Count > 1)
+{
+    Loop, %Count%
+    {
+      if (A_Index = 1)
+        Continue
+      ws := "Sheet" . A_Index
+      Xl.Worksheets(ws).Delete()
+    }
+}
+[/CODE]
+
