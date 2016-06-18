@@ -1,0 +1,9 @@
+Build_Menus()
+{
+  Menu, AllFile, Add, Backup to Archive`tCTRL+F12, Backup
+  Menu, OHIEdit, Add, Select All`tCTRL+A, OHSelAll
+  Menu, ATIMenu, Add, &File, :AllFile
+  Menu, AllMenu, Add, &Edit, :OHIEdit
+  Menu, OHIEdit, Disable, Select All`tCTRL+A, 
+  return
+}

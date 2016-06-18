@@ -1,0 +1,65 @@
+****Before anything else:***  
+	 [ ] Update priority list on readme...things that need to be done ASAP   
+
+	 [ ] Preferences View Mac addresses with or without colon  
+	 [ ] Backup inventory with change state user  
+	 [ ] Clear inventory  
+	 [ ] Undo most recent changes button  
+			[ ] Make changes set variable most recent 2 archive name just made  
+	 [ ] Give edit multiple ability to change label name  
+	 [ ] If program detect P-Touch software option to print labels*****  
+	    
+	 [ ] Make sub that customizes menus for each tab  
+	    
+	 [ ] Research OnMouseOver...Plan to change entire Gui to WinX style.  
+	    
+	 [ ] Make "Add to Inventory" add to LV_Inventory then run Apply Changes  
+	    
+	 [ ] Make Export to Excel prompt  
+	 [ ] Archive when Closing, increase Archive Size (>100)  
+  
+	 [ ] Add "Hide Row" and "Hide Column" to normal context menu for Full Inventory  
+   
+	 [ ] Make just Green and Blue Button pictures without Text, Add Text on Top in AHK (research)  
+   
+	 [ ] Add "Multiple Customers..." to Customer Select Dropdown  
+   
+	 [ ] Make prompt for verify into ComboBox w Last 10 HR Numbers and Multiple...  
+   
+	 [ ] Rename Inventory LV to LV_FInventory  
+	 [ ] Rename other LVs to LV_[CurrentName]  
+   
+	 [ ] Change all User Visable uses of DA 2062 to Hand Receipt  
+   
+	 [ ] See if can change color inside groupbox  
+	 [ ] see if clicking in gb area can trigger glabel  
+   
+	 [ ] Change all NOSN garbage to QI  
+  
+	 [ ] Add to filters "Exclude..."  
+			[ ] Popup gui w chkd LV based on filter. Exclude as Header ok btn and cancel btn  
+			[ ] No matter what after filter applied, send msg to applicable filter to clear selection  
+   
+	 [ ] Change array delimiter to |  
+   
+	 [ ] To loop through array, use enumerating for loop from objects doc  
+   
+	 [ ] Make all lists | delimited  
+   
+	 [ ] Make all lists (That dont need to be sorted or put into lb cb or ddl) into Arrays  
+	 [ ] Stop replacing `, w/ ~ unless adding to csv  
+   
+	 [ ] Make sure any edits that allow label change looks like [labelname]-[value] (if you leave the value blank, the dash will be removed)  
+   
+	 [ ] Make sure anything that runs apply changes runs build inventory at some point before  
+   
+	 [ ] export to excel:  
+	 [ ]  - Edit footers and header  
+	 [ ]      - add page number to footer (see if possible to keep blank if only one)  
+	 [ ]  - Set layout to 1 page wide, landscape  
+	 [ ]  - See if theres a way to detect other pages, then figure how to delete any found  
+	 [ ]  - When it returns to previous subroutine, set header to whatever you're doing and then release the handle (make issue exports set the header to HR# - Customer)  
+   
+	 [ ] Verify that Field0 in stringsplit contains qty of fields  
+   
+ 

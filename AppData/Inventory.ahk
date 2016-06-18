@@ -1,10 +1,11 @@
-Version := "2.1.1.0"
+Version := "2.2.1.0"
 Menu, tray, Icon , %A_ScriptDir%\Images\01.ico, 1, 1
 SetWorkingDir, %A_ScriptDir%
 #SingleInstance, Force
 #NoEnv
 #Include %A_ScriptDir%\lib\Functions.ahk
 #Include %A_ScriptDir%\lib\_struct.ahk
+#Include %A_ScriptDir%\lib\Menus.ahk
 SplashTextOn, 400, 200, Please Wait, Please wait...`n`nHave some digital patience...
 
 
@@ -150,7 +151,7 @@ Gui, Add, ComboBox, xp+0 yp+20 R5 w150 vitm gitm Hwnditmhwnd, Select or Type Her
 ;~ GuiControl, Text, itm, Item
 
 Gui, Font, Bold
-Gui, Add, Text, xp+0 yp+30 h15 w150, Model:
+Gui, Add, Text, xp+0 yp+30 w150, Model:
 Gui, Font, Norm
 Gui, Add, ComboBox, xp+0 yp+20 R5 w150 vMod, Select Item First
 GuiControl, disable, Mod
@@ -210,7 +211,7 @@ Gui, Add, Button,  x120 y20 h47 w50 default gSearch, Search (F3)   ;h25
 
 
 Gui, Add, Button,  x20 y+30 h50 w150 gMakeChanges vMakeChanges, Make Changes
-Gui, Add, Button,  x20 y+30 h50 w150 vDA2062 gFull2062, Generate Complete`nDA Form 2062    ;
+Gui, Add, Button,  x20 y+30 h50 w150 vDA2062 gFull2062, Generate Complete`nHand Receipt    ;
 Gui, Add, Button,  x20 y+30 h50 w150 vExpToXLGUI gExpToXLGUI, Export to Excel
 Gui, Add, Button,  x20 y+30 h50 w150 vExpMAC gExpMAC, Export MAC Address List for VoIP Phones to Excel
 Gui, Add, Button,  x20 y+30 h50 w150 vApply gApplyChanges, Apply
@@ -3272,8 +3273,24 @@ Loop, parse, Rows2Delete, |
   LV_Delete(A_Loopfield)
 Return
 
-SetLabel:
 
+Exit:
+ExitApp
 
-
+ImportXLSX:
+Backup:
+Restore:
+ClearInventory:
+Prefs:
+PrintLbls:
+Print:
+Deadline:
+RunReports:
+UndoChange:
+OHSelAll:
+OHSelN:
+TISelAll:
+Guide:
+Changelog:
+About:
 Return
