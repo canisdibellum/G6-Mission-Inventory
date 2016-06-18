@@ -61,5 +61,42 @@
 	 [ ]  - When it returns to previous subroutine, set header to whatever you're doing and then release the handle (make issue exports set the header to HR# - Customer)  
    
 	 [ ] Verify that Field0 in stringsplit contains qty of fields  
-   
+
+	- In Full Inventory, hide empty Columns and Hide QTY if no QI
+	- Make "Refresh Inventory" option?
+	- Add "Orders" Menu, Verify|Re-Issue|Re-generate Hand Receipt|
+	- Add "Hide Column" to all Grid Context Menus (Add "Show Hidden Columns..." if run)
+		- To Show: popup gui with checkboxes unchecked (like the initial Export gui), 
+	- Make LabelAdvance() a function
+	- store labels in ini as follows:
+		 	[Labels]
+			<Customer>=<HighestNumber>
+	- if any edits made to Label, update ini (don't change Highest if not Highest!)
+	- make EditCell recognize Label column and display edit gui that breaks up over as: edt[LabelName]-edt[LabelNumber]
+	- Msg on bottom saying if label# left blank "-" will be removed
+	
+Excel Settings:
+	- Set Excel Page Set
+	- Add Order Number to Header of Spreadsheet and Page Number if more than one
+		- Favorite saved to count pages with VBA
+		- Favorite saved to set headers and footers with VBA
+	- Research count sheets...delete all but Sheet1
+	- Set Sheet1 Name to Whatever triggered export
+
+Add Re-Issue Feature
+	* Make Cancel Button for re-issue
+	* Make updating listbox into sub with -redraw at beginning and +redraw at end<<<<<<<<<<<<<<<<<<----------DO THIS NORMALLY
+	* Put Order Number at top of ListView<<<<<<<<<<<<<<<<<<----------DO THIS NORMALLY instead of "Selected:"
+	- prompt for order number
+	- Run BuildInventory (do NOT run it again until end)
+	- Lock to OHI
+	- Insert all lines from order on top of OHI as Checked
+		- Update listbox as appropriate
+	- change all Inventory lines w/ order number back to On-Hand
+	- Hide Verify Button
+	- Show Red Picture button with "Cancel" in its place
+	- When Issue pressed, delete the Hand Receipt folder it was supposed to go in
+	- Still prompt for To and From
+	- carry on same as Issue, but don't Retrieve OrderNumber from ini and don't change OrderNumber in ini when complete
+	- Change StoredSerials for Order Number
  
