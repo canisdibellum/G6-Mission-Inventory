@@ -131,6 +131,10 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 		[ ] for things like "Deadline" or "In Use"   
 	 [ ] Add "Duplicate Row" to MakeChanges Context Menu  
 	 [ ] Add ability to Copy Cell to OHInventory   
+	 [ ] Label number formatting...store in ini?....hidden ScanGui Column?....   
+	 [ ] Make HR# into Order Number add order number column to Inventory,    
+	 [ ] hide inventory columns if empty   
+	 [ ]    
     
 ## General To Do:  
 	 [ ] Test all controls make sure everything is Nominal
