@@ -46,8 +46,9 @@ Can be put in at any time, but this is set to false by default
     
 ### Get Value from cell ###
 Sets cell value to variable  
-```Xl.Range("A1").Value := helloworld
-    
+```
+Xl.Range("A1").Value := helloworld
+```
 
 
 
