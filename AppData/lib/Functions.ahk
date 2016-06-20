@@ -61,6 +61,13 @@ CompileList(Find, Criteria, Col, LV, ColumnList)
 
 Search(ByRef SRow,SearchFor,Col,LV)
 {
+  ;~ Returns Row Number according to parameters
+  ;~ SRow: Starting row (if set to same variable as returned, can be made into a search loop)
+  ;~ SearchFor: Criteria to be searched for (PCRE options and Wild cards supported, see https://autohotkey.com/docs/misc/RegEx-QuickRef.htm
+    ;~ SearchFor syntax for finding label names is "A)[LabelName]-+")
+  ;~ Col: Column NUMBER to be searched (Can be ALL)
+  ;~ LV: Grid to be searched
+  StringReplace, SearchFor, SearchFor, `*, `., All
   Gui, Listview, %LV%
   Ttl := LV_GetCount()
   TtlC := LV_GetCount("Column")
@@ -75,43 +82,76 @@ Search(ByRef SRow,SearchFor,Col,LV)
       Loop, %TtlC%
       {
         LV_GetText(SText, SRow, A_Index)
-        if (SText = SearchFor)
-          Break, SearchLoop
+        ;~ OLD WAY (no wildcard support)
+        ;~ if (SText = SearchFor)
+          ;~ Break, SearchLoop
+        FoundPos := RegExMatch(SText, SearchFor)
+          if FoundPos
+            Break, SearchLoop
       }
     }
     else
     {
       LV_GetText(SText, SRow, Col)
-      
-      if (SText = SearchFor)
-          Break, SearchLoop
+      ;~ MsgBox, %SText% %SearchFor%
+      Clipboard := SearchFor
+      FoundPos := RegExMatch(SText, SearchFor)
+      if FoundPos
+        Break, SearchLoop
+      ;~ OLD WAY (no wildcard support)
+      ;~ if (SText = SearchFor)
+          ;~ Break, SearchLoop
     }
    }
-  if (SText <> SearchFor)
+  ;~ if (SText <> SearchFor)
+  if not FoundPos
     SRow := 0
 Return SRow
 }
 
-DblSearch(Find, Criteria, Find2, Criteria2, LV, ColumnList)
+DblSearch(Criteria, Column, Criteria2, Column2, LV)
 {
-  Gui, ListView, %LV%
-  loop, parse, ColumnList, `|
+  ;~ Returns RowNumber that meets both Criteria explicitly, does not have support for wildcards yet.
+  ;~ Criteria: Literal, complete phrase you want to find in %Column%
+  ;~ Column: Literal, complete, NAME of column you want to search for %Criteria%
+  ;~ Criteria2: Same as %Criteria% but in relation to %Column2%
+  ;~ Column2: Same as %Column% but in relation to %Criteria2%
+  ;~ LV: Which grid (ListView) you want to find results in
+  ;~ ColumnList: Complete "|" Separated list of Column Names in %LV%
+  TtlC := LV_GetCount("Column")
+  Loop, %TtlC%
   {
-    if (A_Loopfield = Criteria)
-    {
+    LV_GetText(Name, 0, A_Index)
+    If (Name = Column)
       A := A_Index
-      break
-    }
-  }
-  loop, parse, ColumnList, `|
-  {
-    if (A_Loopfield = Criteria2)
-    {
+    else if (Name = Column2)
       B := A_Index
-      break
-    }
+    if (A <> "" and B <> "")
+      Break
   }
-  ;~ MsgBox, %Find% / %Criteria% %A%/ %Find2% / %Criteria2% %B%/ %LV% / %ColumnList%
+  If (A = "" or B = "" or A = 0 or B = 0)
+    ;~ Give better MsgBox when MsgBox app working
+    MsgBox, Column(s) not Found in %LV%!`n Parameters Given:`n`tColumn:`t%Column%`n`tColumn2:`t%Column2%
+;~ OLD WAY OF ASSOCIATING COLUMN NAME WITH COLUMN NUMBER, Uses 6th Parameter (ColumnList)
+;~ {
+  ;~ loop, parse, ColumnList, `|
+  ;~ {
+    ;~ if (A_Loopfield = Column)
+    ;~ {
+      ;~ A := A_Index
+      ;~ break
+    ;~ }
+  ;~ }
+  ;~ loop, parse, ColumnList, `|
+  ;~ {
+    ;~ if (A_Loopfield = Column2)
+    ;~ {
+      ;~ B := A_Index
+      ;~ break
+    ;~ }
+  ;~ }
+;~ }
+
   RowNumber = 0
   Gui, ListView, %LV%
   Ttl := LV_GetCount()
@@ -119,13 +159,75 @@ DblSearch(Find, Criteria, Find2, Criteria2, LV, ColumnList)
   {
     LV_GetText(Text, A_Index, A)
     LV_GetText(Text2, A_Index, B)
-    if (Text = Find and Text2 = Find2)
+    if (Text = Criteria and Text2 = Criteria2)
       Found := A_Index
   }
   ;~ if (Found = "")
     ;~ Found := 0
   Return Found
 }
+
+TripSearch(Criteria, Column, Criteria2, Column2, Criteria3, Column3, LV)
+{
+  ;~ Returns RowNumber that meets both Criteria explicitly, does not have support for wildcards yet.
+  ;~ Criteria: Literal, complete phrase you want to find in %Column%
+  ;~ Column: Literal, complete, NAME of column you want to search for %Criteria%
+  ;~ Criteria2: Same as %Criteria% but in relation to %Column2%
+  ;~ Column2: Same as %Column% but in relation to %Criteria2%
+  ;~ LV: Which grid (ListView) you want to find results in
+  ;~ ColumnList: Complete "|" Separated list of Column Names in %LV%
+  TtlC := LV_GetCount("Column")
+  Loop, %TtlC%
+  {
+    LV_GetText(Name, 0, A_Index)
+    If (Name = Column)
+      A := A_Index
+    else if (Name = Column2)
+      B := A_Index
+    else if (Name = Column3)
+      C := A_Index
+    if (A <> "" and B <> "" and C <> "")
+      Break
+  }
+  If (A = "" or B = "" or A = 0 or B = 0 or C = "" or C = 0)
+    ;~ Give better MsgBox when MsgBox app working
+    MsgBox, Column(s) not Found in %LV%!`n Parameters Given:`n`tColumn:`t%Column%`n`tColumn2:`t%Column2%n`tColumn3:`t%Column3%
+;~ OLD WAY OF ASSOCIATING COLUMN NAME WITH COLUMN NUMBER, Uses 6th Parameter (ColumnList)
+;~ {
+  ;~ loop, parse, ColumnList, `|
+  ;~ {
+    ;~ if (A_Loopfield = Column)
+    ;~ {
+      ;~ A := A_Index
+      ;~ break
+    ;~ }
+  ;~ }
+  ;~ loop, parse, ColumnList, `|
+  ;~ {
+    ;~ if (A_Loopfield = Column2)
+    ;~ {
+      ;~ B := A_Index
+      ;~ break
+    ;~ }
+  ;~ }
+;~ }
+
+  RowNumber = 0
+  Gui, ListView, %LV%
+  Ttl := LV_GetCount()
+  Loop %Ttl%
+  {
+    LV_GetText(Text, A_Index, A)
+    LV_GetText(Text2, A_Index, B)
+    LV_GetText(Text3, A_Index, C)
+    if (Text = Criteria and Text2 = Criteria2 and Text3 = Criteria3)
+      Found := A_Index
+  }
+  ;~ if (Found = "")
+    ;~ Found := 0
+  Return Found
+}
+
 
 CleanArchive(Directory,ArNum)
 {
@@ -408,16 +510,17 @@ StoredSerials := ""
 GenerateXML:
 FileDelete, %A_ScriptDir%\XML\*.xml
 
-iniread, HRNum, %ini%, HR, HRNum, 0
-HRNum += 1
-IniWrite, %HRNum%, %ini%, HR, HRNum
+iniread, OrderNumber, %ini%, HR, OrderNumber, 0
+;~ OrderNumber += 1
+OrderNumber := SubStr(OrderNumZeros . OrderNumber + 1, -1, OrderNumDigits)
+IniWrite, %OrderNumber%, %ini%, HR, OrderNumber
 
-HRNum := "00000" . HRNum
-StringRight, HRNum, HRNum, 5
+;~ OrderNumber := "00000" . OrderNumber
+;~ StringRight, OrderNumber, OrderNumber, 5
 PG := "A"
 AddList :=
 gosub, XMLAddIncrease
-%XMLAdd% .= "<FROM>" . FromName . "</FROM><TO>" . IssueTo . ":</TO><RECPTNR>" . HRNum . "</RECPTNR>"
+%XMLAdd% .= "<FROM>" . FromName . "</FROM><TO>" . IssueTo . ":</TO><RECPTNR>Order Number:" . OrderNumber . "</RECPTNR>"
 
 
 
@@ -489,7 +592,7 @@ Loop, parse, AddList, `n, `r
   %A_Loopfield% := ""
 }
 
-iniwrite, %StoredSerials%, %ini%, IssuedSerials, %HRNum%
+iniwrite, %StoredSerials%, %ini%, IssuedSerials, %OrderNumber%
 
 CustGrid := ""
 Return
@@ -915,13 +1018,13 @@ Return
 
 
 ExportPDF:
-FileDir := HRDir . "\" . HRNum . " - " . IssueTo
+FileDir := HRDir . "\" . OrderNumber . " - " . IssueTo
 FileCreateDir, %FileDir%
 SetTitleMatchMode, 2
 Loop, %TtlXML%
 {
   XMLImport := XML . A_Index . "`.xml"
-  PDFName := HRNum . " - " . IssueTo
+  PDFName := OrderNumber . " - " . IssueTo
   if (A_Index > 1)
     PgNum := A_Index + 1
   else
@@ -1002,4 +1105,68 @@ ActiveControlIsOfClass(Class) {
     ControlGet, FocusedControlHwnd, Hwnd,, %FocusedControl%, A
     WinGetClass, FocusedControlClass, ahk_id %FocusedControlHwnd%
     return (FocusedControlClass=Class)
+}
+
+LetterArray(Begin,End)
+{
+  ;~ Returns Array of letters at sequential index points, i.e. Columns[1] retrieves the first letter and so on
+  ;~ Begin: First letter to Add to Array  
+  ;~ End: Last letter to add
+  ;~ lowercase parameters ok
+  ;~ reverse order letters ok (Means Array := LetterArray("c","a") returns, Array = [C,B,A])
+  ;~ Only Handles A-Z right now will work later on AA and up
+  Min := Asc(upper(Begin))
+  Max := Asc(upper(End))
+  Reverse := "NO"
+  if (Min > Max)
+  {
+    Reverse := "Yes"
+    tmp := Min
+    Min := Max
+    Max := tmp
+  }
+  if Max not between 65 and 90
+    msgbox, Invalid parameters, Begin and End must only be single letters (in quotes if not using variables)
+  Count := Max - Min + 1
+    ;~ MsgBox, %Count%
+  Letters := []
+  loop %Count%
+  {
+    AsciiCode := A_Index + Min - 1 ;ASCII code for "A" is 65 for reference
+    Letter := Chr(AsciiCode)
+    Letters.Push(Letter)  ;adds letter to array with index = A_Index, so if Begin was "A" then Letters[1] = "A" and Letters[2] = "B"...
+  }
+
+  if (Reverse = "NO")
+    Return Letters
+
+  ReverseLetters := []
+  Index := Count
+  loop %Count%
+  {
+    Letter := Letters[Index]
+    ReverseLetters.Push(Letter)
+    Index -= 1
+  }
+  Return ReverseLetters
+  
+  
+}
+
+Upper(string)
+{
+  StringUpper, STRING, String
+  return STRING
+}
+
+hasValue(haystack, needle) 
+{
+    if(!isObject(haystack))
+        return false
+    if(haystack.Length()==0)
+        return false
+    for k,v in haystack
+        if(v==needle)
+            return true
+    return false
 }

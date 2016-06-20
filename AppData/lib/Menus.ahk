@@ -69,7 +69,7 @@ BuildMenus()
   Menu, TIMenu, Add, &Edit, :TIEdit
   Menu, TIMenu, Add, &Help, :HelpMenu
   
-  Disable Items until they are enabled:
+  ;~ Disable Items until they are enabled:
   Menu, FIEdit, Disable, Make Changes
   Menu, FIEdit, Disable, Apply Changes
   
@@ -79,7 +79,7 @@ BuildMenus()
   Menu, TIEdit, Disable, Undo Last Inventory Change`tCTRL+ALT+SHIFT+Z, 
  
 
-  Disable Non-Working Menu Items:
+  ;~ Disable Non-Working Menu Items:
   Menu, AllFile, Disable, Import Inventory from Excel Spreadsheet
   Menu, AllFile, Disable, Backup to Archive`tCTRL+F12, 
   Menu, AllFile, Disable, Restore Archive...`tCTRL+F11, 
