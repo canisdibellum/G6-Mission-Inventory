@@ -1,10 +1,10 @@
 # G6-Mission-Inventory
 Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF Reader and Excel  
     
-# Version: 2.2.1.0  
+# Version: 2.2.2.0  
     
 ## Version Breakdown:  
-    [Major UI or functionality change] . [Feature-Add] . [Feature-Fix/Bug-Fix] . [Code Cleanup]  
+    [Major UI or functionality change] . [Feature-Add] . [Feature-Fix/Bug-Fix(Code Cleaning implied)] . [Code Cleanup]  
 
 ## ScanGUI Auto-Change Data:    
 	L-[Location]    
@@ -49,27 +49,27 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
   X  Not Going to do, see [Note] at end  
  [>] in progress  
 
-##PRIORITY: (To be done ASAP)
-	 [ ] parse through ideas file from OneCloud, add in to To-Do lists as appropriate
+##Priority List:
+	 [ ] parse through ideas files, add in to To-Do lists as appropriate
 	 [ ] Make sure everything important made it to this Priority List
-	 [ ] Fix Major AInventory (Add to Inventory) Issues:
-		 [ ] Some labels are still showing dashes!  
-		 [ ] Fix label Auto-Numbering  
-		 [ ] Queue is not considered when looking for duplicate serials (SSList) [Add to as part of scan procedure?]  
-			[ ] build ScanCheck Lists: (Serials, Items, Locations) 
-				[ ] Build list of all Serials, Items, and Locations in Inventory when BuildInventory run [I think it already does] 
-				[ ] As soon as scan button is hit, Build Serial, Item, and Location lists from Current Queue [use or update and then use already existing functions to facilitate 
-				[ ] append them to already existing lists,   
-				[ ] look into building lists as arrays and what happens when you try to retrieve the key for a value that doesn't exist,   (checking array for dups: https://autohotkey.com/board/topic/68613-add-variables-to-array-and-check-for-duplicates/)
-				[ ] When scanning, add to lists  
-				[ ] When exiting scan routine, sort, U Location and Item Lists, and update comboboxes  
-		 [ ] Queue is not considered when looking for highest Label Number  
-		 [ ] Keeps trying to re-add IL scans instead of just setting the location  
-		 [ ] Adding quantified items to queue does not update the comboboxes in the "Add Item Without Serial Number" GUI  
-	 [ ] In prompt, blank Model if it says "Select Item First"  
-	 [ ] "Model" manual combobox doesn't populate  
- 	 [ ] when Scan InputBox terminates, check for MAC, if none found make sure MAC Column is hidden   
-
+	 [ ] Fix Major ATI (Add to Inventory) Issues: [Functionality restored, one last irritating thing, though...won't update dropdowns while scanning]
+		 [ ] build ScanCheck Lists: (Serials, Items, Locations) 
+			[ ] When exiting scan routine, sort, U Location and Item Lists, and update comboboxes  
+		 [ ] In prompt, blank Model if it says "Select Item First"  
+		 [ ] Special character is nixed so handle hyphens in added LabelNames 
+		 [ ] when Scan InputBox terminates, check for MAC, if none found make sure MAC Column is hidden   
+	 [ ] Add Order Number Column (And Filter?)
+	 	[ ] Hide Features that require Items being Issued when nothing Issued (should unclutter UI a Bit)
+	 [ ] On-Hand Inventory: When IL is checked, previously checked items in that location have QTY set to 0  
+	 [ ] Implement limited (non-existing items NOT shown) menus 
+	 [ ] Make Generate Reports function (look at Ideas files) 
+	 [ ] Make "Print..." work (You'll already be doing some of the the legwork w/ Generate Reports)
+	 [ ] Implement Export to Excel fixes (Check ideas docs for more, most already ready to implement)
+		 [ ] When Exporting to Excel, count sheets and delete Extras (find COM instructions, I have them somewhere)
+	 	 [ ] Set Headers, Footers and Sheet Name
+		 [ ] Update COM REFERENCE as you find things that aren't on it...don't get distracted and start looking for stuff to add though 
+	 [ ] If nothing major broken, clean up UI...fix little stuff 
+	 	- Sad but I probably won't get to implementing "Print Labels..." maybe when On Location 
 		 
 		 
 	 [ ] Determine which items need to be researched  
@@ -79,25 +79,25 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	 [ ] Make 100% Stable 
 	 [ ] Add Features
     
-## Bug List: (Something acts like it isn't supposed to)  
+## Minor Bug List: (doesn't effect functionality, just user-friendliness)  
 	Add to Inventory: (ScanGui)  
 	 [ ] "Add IL" GUI Controls too short for contained text  
-	 [ ] Casing for "Item" needs to be handled
+	 [ ] Casing for "Item" (to include IL description) needs to be handled
+	 	- look more at StringUpper with "T" option
 	
 	Inventory:  
 	 [ ] "Export to Excel" not looking for MAC Addresses  
 	 [ ] Still tries to generate Full 2062 when nothing issued  
 	 [ ] BuildInventory needs to LV_Delete OHInventory before adding  
- 	 [ ] bug: Single-Cell Edits for bottom 2 Rows are wonky  
+	 [ ] Single-Cell Edits for bottom 2 Rows are wonky
+	 	- Looked into this, very troubling, may have to use LVM_GETITEMPOSITION instead, no idea how to do POINT structure and can still edit cells by edit row so this is low priority  
 	 [ ] Figure out how to auto-size filter DDL's to fit contents    
-	 [ ] Make Changes needs full inventory before enabling changes    
-		[ ] See if that means FReset & BuildInventory or one or the other    
-	 [ ] Edit multiple needs to runthrough and autohdr whatever columns got changed  
+	 [ ] Edit multiple needs to runthrough and autohdr columns
+	 [ ] Make "Edit Cell" AutoHdr edited cell's column when OK pressed
 	
 	On-Hand Inventory:  
-	 [ ] When IL is checked, previously checked items in that location have QTY set to 0  
 	 [ ] Issue Splashscreen delayed, make come up faster  
-	 [ ] Issue Excel export doesn't include MAC Addresses  
+	 [ ] Issue Excel export doesn't include MAC Addresses if not needed and vice versa  
 		Verify Issue:  
 		 [ ] when remove 1st Serial, it leaves white space at top  
 		 [ ] Needs to handle scanning same serial twice  
@@ -110,20 +110,21 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	 
 
 ## Feature Fix: (Something works but it's kluge-y, I can implement better, or is missing certain functionality [ex. doesn't handle Zero or Negative Input])  
-	 [ ] Clarify Error Message Buttons on ScanGui Serial Error  
-	 [ ] Make sure Menu hides if not on Tab 1 and shows if on Tab 1  
+	 [ ] Clarify Error Message Buttons on ScanGui Serial Error 
+	 	- or just make "OK" and they can deal with having to get back into the scan
+	 	- or just make OK and Cancel and include message that cancel exits out of Scan Mode  
 	 [/] Make anything that triggers Filtration run FReset First, then [Guicontrol, text] the appropriate filter with the appropriate value then gosub, Filtration  
-	 [ ] Find and fix all instances where main gui isn't activated when a 2nd GUI window closes    
+	 [/] Find and fix all instances where main gui isn't activated when a 2nd GUI window closes    
 	 [ ] Get Rid of Blank space at the top of CustomerSelect DDL  
 	 [ ] Get Rid all R and H options on DDLs and ComboBoxes (don't forget to check Functions.ahk)  
     
 ## Feature-Add:  
 	 [ ] make ComboBoxes instead be drop-downs with [Add...] option at bottom of list so they have to look through the list before typing something in.  
-	 [ ] Make Undo Hotkey ^z, make return if tab <> 1 (See if it can be useful on other tabs)  
+	 [ ] Make Undo Hotkey ^z, make return if tab <> 1 (See if it can be useful on other tabs)
+	 	- Already being implemented as Keyboard Accelerator with Menus
 	 [ ] Figure out better colored buttons  
 	     [ ] Check other gui styles, see if button color change possible  
 	         [ ] See if WinX style gui available  
-	 [ ] Look into ifexist C:\Program Files\Microsoft Office 15\root\office15\excel.exe (or detect version and if >2010), don't delete Sheets 2 & 3  
 	 [ ] When scanning in Add to Inventory ScanGUI (and possibly Turn-In) make Splashtext with autochange (item labels [i-<>-<>]) and small tips and tricks (ex. type "undo" to undo and "clear" to clear)  
 	     [ ] make typing "Undo" and "Clear" execute those functions  
 	 [ ] Run reports Menu Item....Pop up Msg Box with all stats and option to export to text file.
@@ -136,7 +137,7 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 	 [ ] hide inventory columns if empty   
 	 [ ]    
     
-## General To Do:  
+## Miscellaneous:  
 	 [ ] Test all controls make sure everything is Nominal
 	 [ ] Make sure all Inputs handle blank, 0, and Negative Entries  
 	 [ ] Clear Out old stuff and set HRNum to 0  
@@ -150,6 +151,24 @@ Inventory Program for G6, GLTD made in Autohotkey with Attachment to FoxIt PDF R
 ______________________________________________________________________________  
     
 # Done: 
+    ----------------------2.2.2.0----------------------  
+	 [x] "Model" manual combobox doesn't populate  
+		 [x] Some labels are still showing dashes!  
+		 [x] Fix label Auto-Numbering  
+		 [x] Fix Add to Inventory coding  
+		 [x] Even though make changes is run, Location list does not update after "Add to Inventory"
+		 [x] Add wildcard support to Search()
+		 [x] When scanning, if cancel pressed with text in input, still adds
+		  X  When adding to Inventory: Add "Type or Scan Here" to beginnings of cleared combo boxes [keeps last settings automatically, on purpose]
+		 [x] Queue is not considered when looking for duplicate serials (SSList) [Add to as part of scan procedure?]  
+				[x] Build list of all Serials, Items, and Locations in Inventory when BuildInventory run [I think it already does] 
+				[x] As soon as scan button is hit, Build Serial, Item, and Location lists from Current Queue [use or update and then use already existing functions to facilitate 
+				[x] append them to already existing lists,   
+				 X  look into building lists as arrays and what happens when you try to retrieve the key for a value that doesn't exist,   (checking array for dups: https://autohotkey.com/board/topic/68613-add-variables-to-array-and-check-for-duplicates/) [Looked into it and it's possible, but for a future build]
+				[x] When scanning, add to lists  
+		 [x] Queue is not considered when looking for highest Label Number  
+		 [x] Keeps trying to re-add IL scans instead of just setting the location  
+		 [x] Adding quantified items to queue does not update the comboboxes in the "Add Item Without Serial Number" GUI  
     ----------------------2.2.1.0----------------------  
 	 [x] New Menu subroutines already added to bottom of script  
 	 [x] Test if Capital Letters in Hotkeys matter (doesn't matter)  
